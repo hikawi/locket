@@ -1,4 +1,4 @@
-package dev.frilly.locket.controllers
+package dev.frilly.locket.controller
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,6 +11,11 @@ class IndexController {
     @GetMapping("/")
     fun getIndex(): TestReturnObject {
         return TestReturnObject("Hello, World")
+    }
+
+    @GetMapping("/test")
+    fun getTest(): TestReturnObject {
+        return TestReturnObject("Authenticated route")
     }
 
 }
