@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Locket</string>
+
+    <string name="text_username">Username</string>
+    <string name="text_password">Password</string>
+    <string name="text_login">Login</string>
+    <string name="text_register">Register</string>
+
+    <string name="error_username_empty">Username is empty</string>
+    <string name="error_password_empty">Password is empty</string>
+    <string name="error_password_incorrect">Password is incorrect</string>
+    <string name="error_username_not_found">That username doesn\'t exist</string>
+    <string name="error_username_taken">That username was taken</string>
+    <string name="error_unknown">Unknown error has occurred</string>
+</resources>
