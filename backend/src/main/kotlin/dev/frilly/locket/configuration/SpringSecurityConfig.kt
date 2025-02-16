@@ -1,13 +1,16 @@
 package dev.frilly.locket.configuration
 
+import dev.frilly.locket.component.AuthEntrypoint
 import dev.frilly.locket.component.JwtAuthenticationFilter
 import dev.frilly.locket.service.JwtService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 /**
@@ -16,6 +19,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SpringSecurityConfig {
+
+    @Autowired
+    private lateinit var authEntrypoint: AuthEntrypoint
+
+    @Autowired
+    private lateinit var deniedHandler: AccessDeniedHandler
 
     /**
      * A bean that represents a security filter chain.
@@ -34,6 +43,10 @@ class SpringSecurityConfig {
             .authorizeHttpRequests {
                 it.requestMatchers("/login", "/register", "/").permitAll()
                     .anyRequest().authenticated()
+            }
+            .exceptionHandling {
+                it.authenticationEntryPoint(authEntrypoint)
+                    .accessDeniedHandler(deniedHandler)
             }
             .addFilterBefore(
                 jwt,

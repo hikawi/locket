@@ -4,9 +4,14 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 /**
- * Represents a comment under a post.
+ * Represents a comment under a post. Should this be separated from messages?
  *
- * The table would have (id, user_id, post_id, content, time)
+ * The table has:
+ * - ID (Serial) primary key
+ * - USER_ID (Serial) references users
+ * - POST_ID (Serial) references posts
+ * - CONTENT (Text) the comment
+ * - TIME (Time) when the comment was posted
  */
 @Entity
 @Table(name = "comments")
@@ -22,7 +27,7 @@ data class Comment(
     @JoinColumn(name = "post_id", nullable = false)
     val post: Post,
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     val content: String,
 
     @Column(nullable = false)

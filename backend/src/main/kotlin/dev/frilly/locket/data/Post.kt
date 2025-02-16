@@ -4,9 +4,19 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 /**
- * Represents a picture share.
+ * Represents a picture share. A picture can be shared with a group of friends.
  *
- * A table with columns (ID, user_id, group_id, image_link, message, time)
+ * A table with columns:
+ * - ID (Serial) primary key
+ * - USER_ID (Serial) the uploader references users
+ * - IMAGE_LINK (Text) the link to the hosted image
+ * - MESSAGE (Text) the message with the image
+ * - TIME (Time) when the post was uploaded
+ *
+ * This also implicitly creates a table "post_viewers", to define if the user
+ * can see a post or not:
+ * - POST_ID (Serial) references posts
+ * - USER_ID (Serial) references users
  */
 @Entity
 @Table(name = "posts")
@@ -18,14 +28,18 @@ data class Post(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    val group: Group,
+    @ManyToMany
+    @JoinTable(
+        name = "post_viewers",
+        joinColumns = [JoinColumn(name = "post_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")],
+    )
+    val viewers: Set<User> = emptySet(),
 
     @Column(name = "image_link", nullable = false)
     val imageLink: String,
 
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "text")
     val message: String? = null,
 
     @Column(nullable = false)

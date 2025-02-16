@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.frilly"
-version = "0.0.1-SNAPSHOT"
+version = "0.2-SNAPSHOT"
 
 java {
     toolchain {
@@ -30,6 +30,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")

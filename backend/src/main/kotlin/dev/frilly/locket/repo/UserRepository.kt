@@ -15,4 +15,7 @@ interface UserRepository : JpaRepository<User, Long> {
     @Query("select u from User u where lower(u.username) = lower(:username)")
     fun findByUsername(username: String): Optional<User>
 
+    @Query("select u from User u where lower(u.email) = lower(:email)")
+    fun findByEmail(email: String): Optional<User>
+
 }

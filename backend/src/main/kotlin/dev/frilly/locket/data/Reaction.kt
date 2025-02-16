@@ -4,15 +4,31 @@ import jakarta.persistence.*
 import java.io.Serializable
 
 /**
+ * Represents a type of reaction a user can react to another user's Locket post.
+ */
+enum class ReactionType {
+
+    LIKE,
+    LOVE,
+    FUNNY,
+    SAD,
+    ANGRY,
+
+}
+
+/**
  * Composite primary key for [[Reaction]].
  */
 @Embeddable
 data class ReactionId(val postId: Long, val userId: Long) : Serializable
 
 /**
- * Represents a reaction to a post.
+ * Represents a reaction to a post. Should this be separate from [[Comment]]?
  *
- * The table has (**post_id**, **user_id**, reaction_type)
+ * The table has:
+ * - POST_ID (Serial) primary key references post
+ * - USER_ID (Serial) primary key references user
+ * - REACTION (Text) enum type, check [[ReactionType]]
  */
 @Entity
 @Table(name = "reactions")
