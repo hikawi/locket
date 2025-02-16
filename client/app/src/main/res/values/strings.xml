@@ -2,9 +2,16 @@
     <string name="app_name">Locket</string>
 
     <string name="text_username">Username</string>
+    <string name="text_email">Email</string>
     <string name="text_password">Password</string>
+    <string name="text_confirm_password">Confirm Password</string>
+    <string name="text_dob">DOB</string>
+    <string name="text_continue">Continue</string>
     <string name="text_login">Login</string>
     <string name="text_register">Register</string>
+    <string name="text_welcome">Welcome back</string>
+    <string name="text_fill_information">Fill your information</string>
+    <string name="text_birthday_question">What\'s your birthday?</string>
 
     <string name="error_username_empty">Username is empty</string>
     <string name="error_password_empty">Password is empty</string>
