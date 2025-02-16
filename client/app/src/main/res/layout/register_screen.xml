@@ -19,10 +19,11 @@
             android:id="@+id/text_fill_information"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_semibold"
+            android:fontFamily="@font/inter"
             android:text="@string/text_fill_information"
             android:textAlignment="center"
             android:textColor="@color/white"
+            android:textFontWeight="600"
             android:textSize="32sp"
             app:layout_constraintBottom_toTopOf="@id/view_separator"
             app:layout_constraintEnd_toEndOf="parent"
@@ -62,8 +63,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="username"
-                android:fontFamily="@font/inter_extralight"
-                android:hint="@string/text_username" />
+                android:fontFamily="@font/inter"
+                android:hint="@string/text_username"
+                android:textFontWeight="200" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -87,9 +89,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="emailAddress"
-                android:fontFamily="@font/inter_extralight"
+                android:fontFamily="@font/inter"
                 android:hint="@string/text_email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:textFontWeight="200" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -113,9 +116,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="password"
-                android:fontFamily="@font/inter_extralight"
+                android:fontFamily="@font/inter"
                 android:hint="@string/text_password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textFontWeight="200" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -139,9 +143,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="password"
-                android:fontFamily="@font/inter_extralight"
+                android:fontFamily="@font/inter"
                 android:hint="@string/text_confirm_password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textFontWeight="200" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -151,9 +156,10 @@
             android:layout_marginHorizontal="32dp"
             android:layout_marginTop="32dp"
             android:backgroundTint="@color/gold"
-            android:fontFamily="@font/inter_semibold"
+            android:fontFamily="@font/inter"
             android:text="@string/text_continue"
             android:textColor="@color/black"
+            android:textFontWeight="600"
             android:textSize="18sp"
             app:cornerRadius="8dp"
             app:icon="@drawable/ic_arrow_right"
