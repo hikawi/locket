@@ -1,7 +1,7 @@
 package dev.frilly.locket.data
 
 import jakarta.persistence.*
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 /**
  * A user role, in case we need for administrative events.
@@ -43,8 +43,8 @@ data class User(
     @Column(nullable = false, unique = false)
     var password: String,
 
-    @Column(nullable = false)
-    val birthdate: LocalDateTime,
+    @Column(nullable = true)
+    val birthdate: LocalDate,
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)

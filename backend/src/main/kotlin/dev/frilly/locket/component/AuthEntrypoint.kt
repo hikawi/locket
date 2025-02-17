@@ -18,8 +18,11 @@ class AuthEntrypoint : AuthenticationEntryPoint {
         response: HttpServletResponse?,
         authException: AuthenticationException?
     ) {
-        response?.status = HttpServletResponse.SC_BAD_REQUEST
-        authException?.message?.let { response?.writer?.println(it) }
+        println("🔥 Authentication Entry Point Triggered for: " + request?.requestURI)
+        response?.sendError(
+            HttpServletResponse.SC_UNAUTHORIZED,
+            "Unauthorized"
+        )
     }
 
 }

@@ -1,9 +1,10 @@
 package dev.frilly.locket.controller.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.validation.constraints.*
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 /**
  * The request body schema for POST /register.
@@ -32,5 +33,6 @@ data class RegisterPostRequest @JsonCreator constructor(
     @Past(message = "Birthdate must be in the past")
     @NotNull(message = "Birthdate must not be null")
     @JsonProperty("birthdate")
-    val birthdate: LocalDateTime,
+    @JsonFormat(pattern = "yyyy/MM/dd")
+    val birthdate: LocalDate,
 )

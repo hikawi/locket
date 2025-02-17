@@ -52,9 +52,10 @@ class AccountsController {
     @PostMapping("/register")
     fun postRegister(@Valid @RequestBody body: RegisterPostRequest):
             ResponseEntity<LoginPostResponse> {
-        if (
-            userRepository.findByUsername(body.username).isPresent
-            || userRepository.findByEmail(body.email).isPresent
+        if (userRepository.findByUsernameOrEmail(
+                body.username,
+                body.email
+            ).isPresent
         )
             return ResponseEntity(HttpStatus.CONFLICT)
 
