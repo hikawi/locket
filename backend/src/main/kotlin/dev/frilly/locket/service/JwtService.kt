@@ -55,7 +55,7 @@ class JwtService {
             .verifyWith(key)
             .build()
             .parseSignedClaims(s)
-        return claims.payload.get("id", Long::class.java)
+        return claims.payload.get("id", Integer::class.java).toLong()
     }
 
     /**

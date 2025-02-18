@@ -49,7 +49,4 @@ data class User(
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     var role: UserRole = UserRole.USER,
-
-    @OneToMany(mappedBy = "user1", cascade = [CascadeType.ALL])
-    val relationships: Set<Friendship> = emptySet(),
 )

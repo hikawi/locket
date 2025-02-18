@@ -6,6 +6,9 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import kotlin.jvm.optionals.getOrNull
@@ -37,7 +40,7 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
         val excludedPaths = listOf("/login", "/register", "/")
-        return excludedPaths.any { request.requestURI.startsWith(it, true) }
+        return excludedPaths.any { request.requestURI.equals(it, true) }
     }
 
     override fun doFilterInternal(
@@ -47,17 +50,19 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     ) {
         val user = extractToken(request)?.let { userRepository.findById(it) }
             ?.getOrNull()
+
         if (user == null) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN)
             return
         }
 
-        try {
-            UserContext.user.set(user)
-            filterChain.doFilter(request, response)
-        } finally {
-            UserContext.user.remove()
-        }
+        SecurityContextHolder.getContext().authentication =
+            UsernamePasswordAuthenticationToken.authenticated(
+                user,
+                null,
+                listOf(SimpleGrantedAuthority(user.role.toString())),
+            )
+        filterChain.doFilter(request, response)
     }
 
 }
