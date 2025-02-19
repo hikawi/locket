@@ -16,14 +16,15 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 **Users**:
 
-|  Column   | DataType  | Constraint           |
-| :-------: | :-------: | -------------------- |
-|    id     |  bigint   | primary key identity |
-| username  |   text    | unique not null      |
-|   email   |   text    | unique not null      |
-| password  |   text    | unique not null      |
-| birthdate | timestamp | not null default now |
-|   role    |   text    | not null             |
+|   Column   | DataType | Constraint           |
+| :--------: | :------: | -------------------- |
+|     id     |  bigint  | primary key identity |
+|  username  |   text   | unique not null      |
+|   email    |   text   | unique not null      |
+|  password  |   text   | unique not null      |
+| birthdate  |   date   | not null default now |
+| avatar_url |   text   |                      |
+|    role    |   text   | not null             |
 
 **Friendships**:
 
@@ -108,6 +109,15 @@ How it works? (I think):
 
 - **Express**: HTTP request -> Router -> Middlewares -> Controller
 - **Spring**: HTTP request -> Spring Security (Authentication Entrypoint -> Authentication Filter(s)) -> Controller (and Controller Advice)
+
+## Image System
+
+The image system has not been properly configured. There are currently 2 routes:
+
+- Hosting on **Cloudinary**.
+- Hosting on a self-hosted **Amazon S3 Instance**.
+
+I setup with **Cloudinary**, but we can change to Amazon's S3 if we want.
 
 ## Frontend System
 

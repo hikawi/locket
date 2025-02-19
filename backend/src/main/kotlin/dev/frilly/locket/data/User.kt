@@ -44,9 +44,12 @@ data class User(
     var password: String,
 
     @Column(nullable = true)
-    val birthdate: LocalDate,
+    var birthdate: LocalDate,
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
     var role: UserRole = UserRole.USER,
+
+    @Column(name = "avatar_url", nullable = true)
+    var avatarUrl: String? = null,
 )

@@ -1,12 +1,18 @@
 package dev.frilly.locket
 
+import com.cloudinary.Cloudinary
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 
 @SpringBootApplication
 @ComponentScan(basePackages = ["dev.frilly.locket"])
 class LocketBackendApplication {
+
+    @Value("\${secrets.cloudinary}")
+    private lateinit var cloudinaryUrl: String
 
     companion object {
 
@@ -15,6 +21,14 @@ class LocketBackendApplication {
         @JvmStatic
         val API_VERSION = "0.2"
 
+    }
+
+    /**
+     * The Cloudinary Bean.
+     */
+    @Bean
+    fun cloudinary(): Cloudinary {
+        return Cloudinary(cloudinaryUrl)
     }
 
 }

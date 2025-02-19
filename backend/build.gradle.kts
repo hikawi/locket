@@ -30,9 +30,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("com.cloudinary:cloudinary-core:2.2.0")
+    implementation("com.cloudinary:cloudinary-http5:2.2.0")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 

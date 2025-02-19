@@ -1,15 +1,18 @@
 package dev.frilly.locket.controller
 
 import dev.frilly.locket.controller.dto.GetFriendsResponse
+import dev.frilly.locket.controller.dto.PostRequestsRequest
 import dev.frilly.locket.data.User
 import dev.frilly.locket.repo.FriendshipRepository
+import dev.frilly.locket.repo.UserRepository
+import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import kotlin.jvm.optionals.getOrNull
 
 /**
  * The controller for handling routes /friends.
@@ -19,6 +22,9 @@ class FriendsController {
 
     @Autowired
     private lateinit var friendshipRepository: FriendshipRepository
+
+    @Autowired
+    private lateinit var userRepository: UserRepository
 
     /**
      * GET /friends.
@@ -33,8 +39,8 @@ class FriendsController {
         val user =
             SecurityContextHolder.getContext().authentication.principal as User
 
-        val query = friendshipRepository.findAllByUser(
-            user.id,
+        val query = friendshipRepository.findByUser(
+            user,
             PageRequest.of(
                 page,
                 perPage,
@@ -45,8 +51,32 @@ class FriendsController {
         return GetFriendsResponse(
             total = query.totalElements,
             totalPages = query.totalPages,
-            results = query.content.map { it.user2.username },
+            results = query.content.map {
+                if (it.user1.id == user.id)
+                    it.user2.username
+                else it.user1.username
+            },
         )
+    }
+
+    /**
+     * DELETE /friends.
+     *
+     * Remove a friend.
+     */
+    @DeleteMapping("/friends")
+    fun deleteFriends(@Valid @RequestBody body: PostRequestsRequest):
+            ResponseEntity<PostRequestsRequest> {
+        val user =
+            SecurityContextHolder.getContext().authentication.principal as User
+        val target = userRepository.findByUsername(body.username).getOrNull()
+            ?: return ResponseEntity.notFound().build()
+
+        val friendship = friendshipRepository.findWithTwoUsers(user, target)
+            .getOrNull() ?: return ResponseEntity.noContent().build()
+
+        friendshipRepository.delete(friendship)
+        return ResponseEntity.ok(PostRequestsRequest(target.username))
     }
 
 }

@@ -21,4 +21,7 @@ interface UserRepository : JpaRepository<User, Long> {
     @Query("select u from User u where lower(u.email) = lower(:email) or lower(u.username) = lower(:username)")
     fun findByUsernameOrEmail(username: String, email: String): Optional<User>
 
+    @Query("select u from User u where lower(u.username) in :usernames")
+    fun findByUsernameIn(usernames: Set<String>): List<User>
+
 }
