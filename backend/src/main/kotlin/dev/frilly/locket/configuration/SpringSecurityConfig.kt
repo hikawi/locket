@@ -6,6 +6,7 @@ import dev.frilly.locket.service.JwtService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -40,8 +41,10 @@ class SpringSecurityConfig {
         return sec
             .httpBasic { it.disable() }
             .csrf { it.disable() }
+            .formLogin { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/login", "/register", "/").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/profiles").permitAll()
                     .anyRequest().authenticated()
             }
             .exceptionHandling {

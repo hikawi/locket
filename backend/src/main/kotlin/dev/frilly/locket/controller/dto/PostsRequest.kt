@@ -1,5 +1,6 @@
 package dev.frilly.locket.controller.dto
 
+import jakarta.validation.constraints.Positive
 import java.time.LocalDateTime
 
 data class AbstractPost(
@@ -15,6 +16,7 @@ data class GetPostsResponse(
     val results: List<AbstractPost>,
 )
 
-data class PostPostsRequest(
-    val message: String = "",
+data class DeletePostsRequest(
+    @Positive
+    val id: Long,
 )

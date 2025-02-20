@@ -34,13 +34,13 @@ data class Post(
         joinColumns = [JoinColumn(name = "post_id")],
         inverseJoinColumns = [JoinColumn(name = "user_id")],
     )
-    val viewers: Set<User> = emptySet(),
+    var viewers: MutableSet<User> = mutableSetOf(),
 
     @Column(name = "image_link", nullable = false)
-    val imageLink: String,
+    var imageLink: String,
 
     @Column(nullable = true, columnDefinition = "text")
-    val message: String? = null,
+    var message: String? = null,
 
     @Column(nullable = false)
     val time: LocalDateTime = LocalDateTime.now(),
