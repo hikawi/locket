@@ -60,7 +60,7 @@ class ProfilesController {
      *
      * This endpoint is for updating profiles.
      */
-    @PostMapping("/profiles")
+    @PutMapping("/profiles")
     fun putProfile(@RequestBody body: PutProfilesRequest)
             : ResponseEntity<PutProfilesResponse> {
         val auth = SecurityContextHolder.getContext().authentication

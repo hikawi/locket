@@ -8,4 +8,5 @@
     <color name="red">#FFFF0000</color>
     <color name="tomato">#FFFF7253</color>
     <color name="gold">#FFE3B008</color>
+    <color name="gold_50">#88E3B008</color>
 </resources>

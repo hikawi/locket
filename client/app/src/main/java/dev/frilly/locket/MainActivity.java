@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import dev.frilly.locket.activities.WelcomeActivity;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override

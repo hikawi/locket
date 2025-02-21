@@ -39,8 +39,15 @@ class JwtAuthenticationFilter : OncePerRequestFilter() {
     }
 
     override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        val excludedPaths = listOf("/login", "/register", "/", "/profiles")
-        return excludedPaths.any { request.requestURI.equals(it, true) }
+        println("shouldNotFilter ${request.method} ${request.requestURI}")
+        val excludedFully = listOf("/login", "/register", "/")
+        val excludedGets = listOf("/profiles")
+
+        return excludedFully.any { request.requestURI.equals(it, true) }
+                || excludedGets.any {
+            request.method.equals("get", true)
+                    && request.requestURI.equals(it, true)
+        }
     }
 
     override fun doFilterInternal(

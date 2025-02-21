@@ -1,4 +1,4 @@
-package dev.frilly.locket;
+package dev.frilly.locket.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import dev.frilly.locket.R;
 
 /**
  * The activity to display the welcome screen with two login and register buttons.

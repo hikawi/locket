@@ -37,6 +37,6 @@ data class PutProfilesRequest @JsonCreator constructor(
 data class PutProfilesResponse(
     val username: String,
     val email: String,
-    val birthdate: LocalDate,
+    val birthdate: LocalDate?,
     val avatar: String?,
 )

@@ -1,4 +1,4 @@
-package dev.frilly.locket;
+package dev.frilly.locket.activities;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -6,6 +6,8 @@ import android.widget.EditText;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import dev.frilly.locket.R;
 
 /**
  * The activity for the login screen.

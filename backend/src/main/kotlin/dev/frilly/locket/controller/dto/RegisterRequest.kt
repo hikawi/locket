@@ -3,7 +3,10 @@ package dev.frilly.locket.controller.dto
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonProperty
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.Past
+import jakarta.validation.constraints.Pattern
 import java.time.LocalDate
 
 /**
@@ -31,8 +34,7 @@ data class RegisterPostRequest @JsonCreator constructor(
     val password: String,
 
     @Past(message = "Birthdate must be in the past")
-    @NotNull(message = "Birthdate must not be null")
     @JsonProperty("birthdate")
     @JsonFormat(pattern = "yyyy/MM/dd")
-    val birthdate: LocalDate,
+    val birthdate: LocalDate? = null,
 )

@@ -44,7 +44,7 @@ data class User(
     var password: String,
 
     @Column(nullable = true)
-    var birthdate: LocalDate,
+    var birthdate: LocalDate? = null,
 
     @Enumerated(value = EnumType.STRING)
     @Column(nullable = false)
