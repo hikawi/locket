@@ -126,6 +126,7 @@ public class Register2Activity extends AppCompatActivity implements DatePickerDi
                 calendar.set(Calendar.DAY_OF_MONTH, date.getDayOfMonth());
             } catch (DateTimeParseException exception) {
                 // Intentionally left blank.
+                errorText.setText(R.string.error_birthdate_invalid);
             }
         }
 

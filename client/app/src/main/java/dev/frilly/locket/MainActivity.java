@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import dev.frilly.locket.activities.CameraActivity;
 import dev.frilly.locket.activities.WelcomeActivity;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,11 +14,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // TODO: Remove this
         Authentication.unauthenticate(this);
 
+        // If the user is already logged in, saved in SharedPreferences,
+        // continue the main activity.
+        // If not, get to the screen to either login/register.
         if (Authentication.isAuthenticated(this)) {
-            // TODO: Go straight to main screen.
+            final var intent = new Intent(this, CameraActivity.class);
+            startActivity(intent);
         } else {
             final var intent = new Intent(this, WelcomeActivity.class);
             startActivity(intent);
