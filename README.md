@@ -92,7 +92,7 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 Currently hosted on `https://locket.frilly.dev/`. This does not sync with Git, deploying requires rsync-ing over and re-running the .jar file.
 
-Choose one system, currently on **Spring Boot**.
+Choose one system, currently on **Spring Boot 3**, ran on **Java 21** and **Kotlin 2**.
 
 |    Stack    |      Spring Boot      |             Express             |
 | :---------: | :-------------------: | :-----------------------------: |
@@ -110,6 +110,164 @@ How it works? (I think):
 - **Express**: HTTP request -> Router -> Middlewares -> Controller
 - **Spring**: HTTP request -> Spring Security (Authentication Entrypoint -> Authentication Filter(s)) -> Controller (and Controller Advice)
 
+### Routes
+
+Security is done via a header `Authorization` with `Bearer <token>`. There are routes that are unauthenticated:
+
+- POST `/login`
+- POST `/register`
+- GET `/`
+- GET `/profiles` (partially)
+
+Trying to access a route that does not exist always returns `404 NOT FOUND`. Trying to access an authenticated route without a valid token always returns `401 UNAUTHORIZED`.
+
+Most routes accept `application/json`. Except a few routes that need image data, therefore, those would accept `multipart/form-data` instead.
+
+#### GET `/`
+
+- Gets the server's active version. This is for checking if the server's up to date, for example, if you changed something and the Git's version is 1.1, but the server still says 1.0, the server hasn't been updated.
+- Returns:
+  - 200 with { version: string }
+
+> You can check the Git's version in LocketBackendApplication.kt file.
+
+#### POST `/login`
+
+- Logins with an existing account.
+- Accepts body:
+  - username (string)
+  - password (string)
+- Returns:
+  - 404 if username not found
+  - 403 if username found, password incorrect
+  - 200 with { token: string } returned
+
+#### POST `/register`
+
+- Registers a new account.
+- Accepts body:
+  - username (string)
+  - email (string)
+  - password (string)
+- Returns:
+  - 400 if some fields are missing, or email is not an email, or username is not in correct format
+  - 409 if username or email is taken
+  - 200 if success, returns { token: string }
+
+#### GET `/profiles`
+
+- Retrieves user's information. If user is authenticated AND username is not provided, then it fetches the user's own profile. If username is provided, it will always fetch that user's profile.
+- Accepts query:
+  - username (string, optional)
+- Returns:
+  - 404 if username is not found OR when not authenticated and didn't provide a username
+  - 200 along with { username: string, email: string, birthdate: date?, avatar: string? }
+
+#### PUT `/profiles`
+
+- Updates profile's information. Provide the field to change, if no change, don't put in the body.
+- Accepts query:
+  - username (string?)
+  - email (string?)
+  - password (string?)
+  - birthdate (date?)
+- Returns:
+  - 409 if username or email is already used by another user (different user id)
+  - 200 with { username: string, email: string, birthdate: date?, avatar: string? }
+
+#### GET `/requests`
+
+- Retrieves a list of friend requests.
+- Returns:
+  - 200 with { results: { username: string, avatar: string? }[] }
+
+#### POST `/requests`
+
+- Sends a friend request or accepts one.
+- Accepts body:
+  - username: string
+- Returns:
+  - 409 if you already sent a request to that person
+  - 403 if the target user is yourself
+  - 404 if the target user can not be found
+  - 204 if the target has sent you a request, you just accepted it
+  - 200 if the request was sent successfully, returns { username: string }
+
+#### DELETE `/requests`
+
+- Denies a friend request.
+- Accepts body:
+  - username: string
+- Returns:
+  - 404 if the target can not be found
+  - 204 if nothing was deleted
+  - 200 if the request was deleted
+
+#### GET `/friends`
+
+- Retrieves a list of my friends.
+- Accepts query:
+  - page (int, default 0)
+  - per_page (int, default 20)
+- Returns:
+  - 200 with { total: long, totalPages: int, results: { username: string, avatar: string? }[] }
+
+#### DELETE `/friends`
+
+- Removes a friend.
+- Accepts body:
+  - username (string)
+- Returns:
+  - 404 if username not found
+  - 204 if you weren't friends in the first place
+  - 200 if friendship deleted
+
+#### GET `/posts`
+
+- Retrieves a list of posts I can see, ranging in a timeframe.
+- Accepts query:
+  - from (date)
+  - to (date, default now)
+- Returns:
+  - 200 with { total: long, results: { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date } }
+
+#### POST `/posts`
+
+- Post an image.
+- Accepts body (multipart/form-data):
+  - image (file): The image file itself, accepts 10MB max, allows PNG, JPG, WEBP.
+  - message (string?): Optional, the message of the post
+  - viewers (string): A comma-separated list of users to share with. Eg: vohoangduc,ducthien,thehung. Empty means private.
+- Returns:
+  - 400 if the file is not a valid image
+  - 413 if the file is too big
+  - 201 with header "Location" pointing to the image link
+
+#### PUT `/posts`
+
+- Edit a post. If a field is provided, that field will be changed.
+- Accepts body (multipart/form-data):
+  - id (long): the post ID
+  - image (file?): optional image file, same as POST `/posts`
+  - message (string?): optional
+  - viewers (string?): optional
+- Returns:
+  - 404 if the post ID doesn't exist
+  - 403 if the post wasn't yours
+  - 400 if the file is invalid image
+  - 413 if the file is too big
+  - 200 with { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date }
+
+#### DELETE `/posts`
+
+- Delete a post.
+- Accepts body:
+  - id (long): the post ID to delete
+- Returns:
+  - 404 if the post ID was not found
+  - 403 if the post's author wasn't you
+  - 200 with { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date }
+
 ## Image System
 
 The image system has not been properly configured. There are currently 2 routes:
@@ -121,6 +279,6 @@ I setup with **Cloudinary**, but we can change to Amazon's S3 if we want.
 
 ## Frontend System
 
-- Android API v24
+- Android API v28
 - Device: Pixel Pro (API v35)
-- Language: Java
+- Language: Java 21.0.5 Temurin
