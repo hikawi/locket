@@ -34,7 +34,7 @@ data class PutProfilesRequest @JsonCreator constructor(
  *
  * The fields are never null, returns after updating.
  */
-data class PutProfilesResponse(
+data class Profile(
     val username: String,
     val email: String,
     val birthdate: LocalDate?,

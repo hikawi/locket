@@ -75,8 +75,9 @@ class PostsController {
                 AbstractPost(
                     id = it.id,
                     poster = AbstractUser(
-                        it.user.username,
-                        avatar = user.avatarUrl,
+                        id = it.user.id,
+                        username = it.user.username,
+                        avatar = it.user.avatarUrl,
                     ),
                     image = it.imageLink,
                     message = it.message,
@@ -163,7 +164,7 @@ class PostsController {
         return ResponseEntity.ok(
             AbstractPost(
                 id = post.id,
-                poster = AbstractUser(user.username, user.avatarUrl),
+                poster = AbstractUser(user.id, user.username, user.avatarUrl),
                 image = post.imageLink,
                 message = post.message,
                 time = post.time,
@@ -190,7 +191,7 @@ class PostsController {
         return ResponseEntity.ok(
             AbstractPost(
                 id = post.id,
-                poster = AbstractUser(user.username, user.avatarUrl),
+                poster = AbstractUser(user.id, user.username, user.avatarUrl),
                 image = post.imageLink,
                 message = post.message,
                 time = post.time,

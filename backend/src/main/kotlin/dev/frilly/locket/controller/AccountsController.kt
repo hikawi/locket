@@ -3,6 +3,7 @@ package dev.frilly.locket.controller
 import dev.frilly.locket.controller.dto.LoginPostRequest
 import dev.frilly.locket.controller.dto.LoginPostResponse
 import dev.frilly.locket.controller.dto.RegisterPostRequest
+import dev.frilly.locket.controller.dto.RegisterPostResponse
 import dev.frilly.locket.data.User
 import dev.frilly.locket.repo.UserRepository
 import dev.frilly.locket.service.JwtService
@@ -51,7 +52,7 @@ class AccountsController {
      */
     @PostMapping("/register")
     fun postRegister(@Valid @RequestBody body: RegisterPostRequest):
-            ResponseEntity<LoginPostResponse> {
+            ResponseEntity<RegisterPostResponse> {
         if (userRepository.findByUsernameOrEmail(
                 body.username,
                 body.email
@@ -63,11 +64,12 @@ class AccountsController {
             id = 0,
             email = body.email,
             username = body.username,
-            birthdate = body.birthdate,
             password = bCryptPasswordEncoder.encode(body.password),
         )
         userRepository.save(user)
-        return ResponseEntity.ok(LoginPostResponse(jwtService.encode(user.id)))
+        return ResponseEntity.ok(
+            RegisterPostResponse(jwtService.encode(user.id))
+        )
     }
 
 }

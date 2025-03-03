@@ -44,7 +44,11 @@ class RequestsController {
 
         return GetRequestsResponse(
             results = requestRepository.findAllByReceiver(user).map {
-                AbstractUser(it.sender.username, it.sender.avatarUrl)
+                AbstractUser(
+                    it.sender.id,
+                    it.sender.username,
+                    it.sender.avatarUrl,
+                )
             }
         )
     }
@@ -60,6 +64,10 @@ class RequestsController {
         val user = auth.principal as User
         val target = userRepository.findByUsername(body.username).getOrNull()
             ?: return ResponseEntity.notFound().build()
+
+        if (user.id == target.id) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
 
         if (requestRepository.findBySenderAndReceiver(user, target).isPresent) {
             return ResponseEntity(HttpStatus.CONFLICT)

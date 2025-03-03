@@ -1,7 +1,8 @@
 package dev.frilly.locket.controller
 
+import dev.frilly.locket.controller.dto.AbstractUser
+import dev.frilly.locket.controller.dto.DeleteFriendsRequest
 import dev.frilly.locket.controller.dto.GetFriendsResponse
-import dev.frilly.locket.controller.dto.PostRequestsRequest
 import dev.frilly.locket.data.User
 import dev.frilly.locket.repo.FriendshipRepository
 import dev.frilly.locket.repo.UserRepository
@@ -52,9 +53,9 @@ class FriendsController {
             total = query.totalElements,
             totalPages = query.totalPages,
             results = query.content.map {
-                if (it.user1.id == user.id)
-                    it.user2.username
-                else it.user1.username
+                val other = if (it.user1.id == user.id) it.user2
+                else it.user1
+                AbstractUser(other.id, other.username, other.avatarUrl)
             },
         )
     }
@@ -65,8 +66,8 @@ class FriendsController {
      * Remove a friend.
      */
     @DeleteMapping("/friends")
-    fun deleteFriends(@Valid @RequestBody body: PostRequestsRequest):
-            ResponseEntity<PostRequestsRequest> {
+    fun deleteFriends(@Valid @RequestBody body: DeleteFriendsRequest):
+            ResponseEntity<AbstractUser> {
         val user =
             SecurityContextHolder.getContext().authentication.principal as User
         val target = userRepository.findByUsername(body.username).getOrNull()
@@ -76,7 +77,13 @@ class FriendsController {
             .getOrNull() ?: return ResponseEntity.noContent().build()
 
         friendshipRepository.delete(friendship)
-        return ResponseEntity.ok(PostRequestsRequest(target.username))
+        return ResponseEntity.ok(
+            AbstractUser(
+                target.id,
+                target.username,
+                target.avatarUrl
+            )
+        )
     }
 
 }

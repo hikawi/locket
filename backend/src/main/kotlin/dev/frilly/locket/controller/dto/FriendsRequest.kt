@@ -1,9 +1,11 @@
 package dev.frilly.locket.controller.dto
 
 import jakarta.validation.constraints.NotEmpty
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Pattern
 
 data class AbstractUser(
+    val id: Long,
     val username: String,
     val avatar: String?,
 )
@@ -16,7 +18,16 @@ data class AbstractUser(
 data class GetFriendsResponse(
     val total: Long,
     val totalPages: Int,
-    val results: List<String>, // list of usernames
+    val results: List<AbstractUser>, // list of usernames
+)
+
+/**
+ * Request body schema for DELETE /friends.
+ */
+data class DeleteFriendsRequest(
+    @NotNull
+    @Pattern(regexp = "[a-zA-Z-_][a-zA-Z0-9-_]+")
+    val username: String,
 )
 
 /**

@@ -1,7 +1,7 @@
 package dev.frilly.locket.controller
 
+import dev.frilly.locket.controller.dto.Profile
 import dev.frilly.locket.controller.dto.PutProfilesRequest
-import dev.frilly.locket.controller.dto.PutProfilesResponse
 import dev.frilly.locket.data.User
 import dev.frilly.locket.repo.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,13 +28,13 @@ class ProfilesController {
     @GetMapping("/profiles")
     fun getProfile(
         @RequestParam username: String = ""
-    ): ResponseEntity<PutProfilesResponse> {
+    ): ResponseEntity<Profile> {
         val auth = SecurityContextHolder.getContext().authentication
 
         if (auth.principal is User && username.isBlank()) {
             val user = auth.principal as User
             return ResponseEntity.ok(
-                PutProfilesResponse(
+                Profile(
                     username = user.username,
                     email = user.email,
                     birthdate = user.birthdate,
@@ -45,7 +45,7 @@ class ProfilesController {
             val target = userRepo.findByUsername(username).getOrNull()
                 ?: return ResponseEntity.notFound().build()
             return ResponseEntity.ok(
-                PutProfilesResponse(
+                Profile(
                     username = target.username,
                     email = target.email,
                     birthdate = target.birthdate,
@@ -62,7 +62,7 @@ class ProfilesController {
      */
     @PutMapping("/profiles")
     fun putProfile(@RequestBody body: PutProfilesRequest)
-            : ResponseEntity<PutProfilesResponse> {
+            : ResponseEntity<Profile> {
         val auth = SecurityContextHolder.getContext().authentication
         val user = auth.principal as User
 
@@ -95,7 +95,7 @@ class ProfilesController {
 
         userRepo.save(user)
         return ResponseEntity.ok(
-            PutProfilesResponse(
+            Profile(
                 username = user.username,
                 email = user.email,
                 birthdate = user.birthdate,

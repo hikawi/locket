@@ -19,7 +19,7 @@ class LocketBackendApplication {
         /** The API VERSION of the application.
          */
         @JvmStatic
-        val API_VERSION = "0.3"
+        val API_VERSION = "0.4"
 
     }
 
