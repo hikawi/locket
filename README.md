@@ -4,9 +4,10 @@
 
 A clone of the Locket application, with the following tech stack:
 
-- Frontend: Android only (Java) + XML
-- Backend: Spring Boot (Kotlin) (_can be changed to ExpressTS if necessary_)
-- Database: PostgreSQL v17.2
+- **Frontend**: Android only (Java) + XML
+- **Backend**: Spring Boot (Java)
+- **Image Cloud**: Cloudinary
+- **Database**: PostgreSQL v17.2
 
 ## Database System
 
@@ -28,10 +29,10 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 **Friendships**:
 
-| Column | DataType | Constraint  |
-| :----: | :------: | ----------- |
-| user1  |  bigint  | primary key |
-| user2  |  bigint  | primary key |
+| Column | DataType | Constraint                       |
+| :----: | :------: | -------------------------------- |
+| user1  |  bigint  | primary key references users(id) |
+| user2  |  bigint  | primary key references users(id) |
 
 **Friend Requests**:
 
@@ -90,25 +91,7 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 ## Backend System
 
-Currently hosted on `https://locket.frilly.dev/`. This does not sync with Git, deploying requires rsync-ing over and re-running the .jar file.
-
-Choose one system, currently on **Spring Boot 3**, ran on **Java 21** and **Kotlin 2**.
-
-|    Stack    |      Spring Boot      |             Express             |
-| :---------: | :-------------------: | :-----------------------------: |
-|  Language   |     Kotlin, Java      |           TypeScript            |
-|  Security   | Spring Security + JWT |               JWT               |
-|   Driver    |      Spring JDBC      |           DrizzleKit            |
-|     ORM     |   Spring Hibernate    | DrizzleORM / Sequelize / KnexJS |
-|    HTTP     |      Spring Web       |         _already HTTP_          |
-| Validation  |   Spring Validation   |               Zod               |
-| How to run  |  `./gradlew bootRun`  |       `npx tsx index.ts`        |
-| Environment |      Java 21.0.5      |            Node v22             |
-
-How it works? (I think):
-
-- **Express**: HTTP request -> Router -> Middlewares -> Controller
-- **Spring**: HTTP request -> Spring Security (Authentication Entrypoint -> Authentication Filter(s)) -> Controller (and Controller Advice)
+Currently hosted on `https://locket.frilly.dev/`. This does not sync with Git, deploying requires rsync-ing over and re-running the .jar file. The backend is currently on **Spring Boot 3**, ran on **Java 21**.
 
 ### Routes
 
@@ -267,6 +250,38 @@ Most routes accept `application/json`. Except a few routes that need image data,
   - 404 if the post ID was not found
   - 403 if the post's author wasn't you
   - 200 with { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date }
+
+#### GET `/messages` (v0.4.1)
+
+- Get messages for me within a certain time frame.
+- Accepts query:
+  - page (int, default 0)
+  - per_page (int, default 20)
+  - since (local date time)
+  - until (local date time, optional)
+- Always returns 200 with a paginated object { total, totalPages, page, perPage, results: { id, sender, receiver, content, time, state }[] }
+
+#### POST `/messages` (v0.4.1)
+
+- Send a new message to another user.
+- Accepts body:
+  - receiver (long): The user's ID
+  - content (string): The content string
+- Returns:
+  - 400 if receiver is negative, or content is empty
+  - 404 if the receiver ID can not be found
+  - 403 if the receiver is not your friend
+  - 200 with { id, sender, receiver, content, time, state }
+
+#### DELETE `/messages` (v0.4.1)
+
+- Delete a sent message.
+- Accepts body:
+  - id (long): the message ID
+- Returns:
+  - 403 if the message is not yours
+  - 204 if the message doesn't exist
+  - 200 if success, returns { id, sender, receiver, content, time, state }
 
 ## Image System
 
