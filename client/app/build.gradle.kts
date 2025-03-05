@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.application)
+    id("com.android.application")
 }
 
 android {
@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-
+    implementation("androidx.camera:camera-video:1.3.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
