@@ -1,5 +1,6 @@
 package dev.frilly.locket.data;
 
+import dev.frilly.locket.dto.res.MessageResponse;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -66,6 +67,11 @@ public final class Message {
 
   public State state() {
     return state;
+  }
+
+  public MessageResponse makeResponse() {
+    return new MessageResponse(id, sender.makeResponse(),
+        receiver.makeResponse(), content, time, state);
   }
 
   /**
