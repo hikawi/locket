@@ -51,6 +51,8 @@
         <activity android:name=".activities.CameraActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
+        <activity android:name=".activities.ConfirmPostActivity" />
+
     </application>
 
 </manifest>

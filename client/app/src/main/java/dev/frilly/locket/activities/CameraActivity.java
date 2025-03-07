@@ -2,6 +2,7 @@ package dev.frilly.locket.activities;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
@@ -177,7 +178,7 @@ public class CameraActivity extends AppCompatActivity {
             return;
         }
 
-        File photoFile = new File(getExternalFilesDir(null), "photo.jpg");
+        File photoFile = new File(getExternalFilesDir(null), "photo_" + System.currentTimeMillis() + ".jpg");
         ImageCapture.OutputFileOptions outputFileOptions =
                 new ImageCapture.OutputFileOptions.Builder(photoFile).build();
 
@@ -187,6 +188,7 @@ public class CameraActivity extends AppCompatActivity {
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         runOnUiThread(() -> {
                             Toast.makeText(CameraActivity.this, "Chụp ảnh thành công!", Toast.LENGTH_SHORT).show();
+                            openConfirmPostActivity(photoFile.getAbsolutePath(), "image");
                         });
                     }
 
@@ -200,28 +202,35 @@ public class CameraActivity extends AppCompatActivity {
     private void startRecording() {
         if (videoCapture == null || isRecording) return;
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MediaStore.MediaColumns.DISPLAY_NAME, "video_" + System.currentTimeMillis());
-        contentValues.put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4");
+        try {
+            File videoFile = new File(getExternalFilesDir(null), "video_" + System.currentTimeMillis() + ".mp4");
+            FileOutputOptions outputOptions = new FileOutputOptions.Builder(videoFile).build();
 
-        MediaStoreOutputOptions options = new MediaStoreOutputOptions.Builder(
-                getContentResolver(),
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-        ).setContentValues(contentValues).build();
+            currentRecording = videoCapture.getOutput()
+                    .prepareRecording(this, outputOptions)
+                    .start(ContextCompat.getMainExecutor(this), videoRecordEvent -> {
+                        if (videoRecordEvent instanceof VideoRecordEvent.Start) {
+                            isRecording = true;
+                            Toast.makeText(this, "Bắt đầu quay video...", Toast.LENGTH_SHORT).show();
+                        } else if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
+                            isRecording = false;
+                            VideoRecordEvent.Finalize finalizeEvent = (VideoRecordEvent.Finalize) videoRecordEvent;
+                            if (finalizeEvent.hasError()) {
+                                Toast.makeText(this, "Lỗi quay video: " + finalizeEvent.getError(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                runOnUiThread(() -> {
+                                    Toast.makeText(this, "Video đã lưu!", Toast.LENGTH_SHORT).show();
+                                    openConfirmPostActivity(videoFile.getAbsolutePath(), "video");
+                                });
+                            }
+                        }
+                    });
 
-        currentRecording = videoCapture.getOutput()
-                .prepareRecording(this, options)
-                .start(ContextCompat.getMainExecutor(this), videoRecordEvent -> {
-                    if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
-                        runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Video đã lưu!", Toast.LENGTH_SHORT).show());
-                    }
-                });
-
-        isRecording = true;
-        Toast.makeText(this, "Bắt đầu quay video...", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Không thể tạo file tạm!", Toast.LENGTH_SHORT).show();
+        }
     }
-
-
 
     private void stopRecording() {
         if (currentRecording != null && isRecording) {
@@ -231,6 +240,16 @@ public class CameraActivity extends AppCompatActivity {
             Toast.makeText(this, "Dừng quay video!", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
+    private void openConfirmPostActivity(String filePath, String fileType) {
+        Intent intent = new Intent(CameraActivity.this, ConfirmPostActivity.class);
+        intent.putExtra("file_path", filePath);
+        intent.putExtra("file_type", fileType);
+        startActivity(intent);
+    }
+    
 
     @Override
     protected void onDestroy() {
