@@ -9,31 +9,8 @@ import java.time.LocalDate;
 /**
  * DTO for a request concerning all user's fields.
  */
-public final class ProfileRequest {
-
-  @Pattern(regexp = Constants.USERNAME_REGEX)
-  private final String username = null;
-
-  @Email
-  private final String    email     = null;
-  private final String    password  = null;
-  private final LocalDate birthdate = null;
-
-
-  public String username() {
-    return username;
-  }
-
-  public String email() {
-    return email;
-  }
-
-  public String password() {
-    return password;
-  }
-
-  public LocalDate birthdate() {
-    return birthdate;
-  }
+public record ProfileRequest(
+    @Pattern(regexp = Constants.USERNAME_REGEX) String username,
+    @Email String email, String password, LocalDate birthdate) {
 
 }

@@ -39,6 +39,7 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
       @NotNull final HttpServletResponse response,
       @NotNull final FilterChain filterChain
   ) throws ServletException, IOException {
+    System.out.println("JWT Authentication Filter");
     try {
       final var userId = extractToken(request);
       final var user   = userRepo.findById(userId);
@@ -53,12 +54,16 @@ public final class JwtAuthenticationFilter extends OncePerRequestFilter {
     } catch (JwtException ex) {
       // Ignored
     }
-    
+
     filterChain.doFilter(request, response);
   }
 
   private long extractToken(final HttpServletRequest req) throws JwtException {
-    final var header  = req.getHeader("Authorization");
+    final var header = req.getHeader("Authorization");
+    if (header == null) {
+      return -1;
+    }
+
     final var matcher = Pattern.compile("Bearer (.*)").matcher(header);
 
     if (!matcher.matches()) {

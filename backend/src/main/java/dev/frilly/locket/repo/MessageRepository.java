@@ -15,7 +15,8 @@ import java.time.LocalDateTime;
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
   @Query(
-      "select m from Message m where m.receiver = :receiver and m.time >= " + "from and m.time <= until"
+      "select m from Message m where m.receiver = :receiver and m.time >= " +
+      ":from and m.time <= :until"
   )
   Page<Message> findMessages(
       final User receiver,

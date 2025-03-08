@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.frilly"
-version = "0.4.1-SNAPSHOT"
+version = "0.4.2-SNAPSHOT"
 
 java {
     toolchain {
@@ -35,7 +35,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.cloudinary:cloudinary-core:2.2.0")
     implementation("com.cloudinary:cloudinary-http5:2.2.0")
-    implementation("om.google.firebase:firebase-admin:9.4.3")
+    implementation("com.google.firebase:firebase-admin:9.4.3")
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
