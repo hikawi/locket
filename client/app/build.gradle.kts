@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -12,7 +14,7 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
-
+        multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -41,6 +43,7 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.security.crypto)
+
     testImplementation(libs.junit)
     implementation(libs.camera.core)
     implementation(libs.camera.camera2)
@@ -50,4 +53,19 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.okhttp3.okhttp)
     implementation(libs.glide)
+    //scale size unit (support for different screen size)
+    implementation("com.intuit.sdp:sdp-android:1.0.6")
+    implementation("com.intuit.ssp:ssp-android:1.0.6")
+    //Rounded ImageView
+    implementation("com.makeramen:roundedimageview:2.3.0")
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    //Firebase
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.firestore)
+    implementation("com.google.firebase:firebase-auth")
+
+
+    //MultiDex
+    implementation("androidx.multidex:multidex:2.0.1")
 }

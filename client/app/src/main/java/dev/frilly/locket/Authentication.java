@@ -5,6 +5,8 @@ import android.content.Context;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
+import org.json.JSONObject;
+
 /**
  * Class to check for authentication token.
  */
@@ -94,6 +96,30 @@ public class Authentication {
     public static boolean isAuthenticated(final Context ctx) {
         final var token = getToken(ctx);
         return token != null && !token.isBlank();
+    }
+
+    // Lưu User Data vào SharedPreferences
+    public static void saveUserData(Context ctx, JSONObject userObj) {
+        try {
+            final var sharedPrefs = ctx.getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            sharedPrefs.edit()
+                    .putString("user_info", userObj.toString())
+                    .apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Lấy User Data từ SharedPreferences
+    public static JSONObject getUserData(Context ctx) {
+        try {
+            final var sharedPrefs = ctx.getSharedPreferences("user_data", Context.MODE_PRIVATE);
+            String userData = sharedPrefs.getString("user_info", "{}");
+            return new JSONObject(userData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
     }
 
 }

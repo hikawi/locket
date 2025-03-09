@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "587497483179",
+    "project_id": "locket-f5f8b",
+    "storage_bucket": "locket-f5f8b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:587497483179:android:d3c61b211ba32acbb480ee",
+        "android_client_info": {
+          "package_name": "dev.frilly.locket"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyoehGeGWDSy2jDjOFLynmlNukq3bloBM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
