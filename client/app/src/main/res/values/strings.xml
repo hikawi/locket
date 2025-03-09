@@ -22,6 +22,15 @@
     <string name="error_password_different">Passwords don\'t match</string>
     <string name="error_birthdate_invalid">Birthdate is invalid</string>
     <string name="error_unknown">Unknown error has occurred</string>
+
+    <string name="text_back">Back</string>
+    <string name="text_new_email">New email address</string>
+    <string name="text_edit_info">Edit Info</string>
+    <string name="text_change_email">Change email</string>
+    <string name="text_add_widget">Add widget</string>
+    <string name="text_logout">Logout</string>
+    <string name="text_delete_account">Delete account</string>
+
     <string name="user_avatar" />
     <string name="chat_with_friends">chat_with_friends</string>
     <string name="select_from_album">select_from_album</string>
