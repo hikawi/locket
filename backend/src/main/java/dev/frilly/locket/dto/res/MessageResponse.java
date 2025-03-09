@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * @param id       the message id
  * @param sender   the sender response
  * @param receiver the receiver response
- * @param content  the content of the message
+ * @param content  the message of the message
  * @param time     the time when the message is logged
  * @param state    the message's state
  */

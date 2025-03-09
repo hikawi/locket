@@ -2,11 +2,12 @@ package dev.frilly.locket.repo;
 
 import dev.frilly.locket.data.Post;
 import dev.frilly.locket.data.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * A CRUD Repository for managing posts.
@@ -26,10 +27,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
       "select p from Post p where p.time >= :from and p.time <= :to and " +
       "(:viewer member of p.viewers or p.user = :viewer)"
   )
-  List<Post> getPostsInRange(
+  Page<Post> getPostsInRange(
       final User viewer,
       final LocalDateTime from,
-      final LocalDateTime to
+      final LocalDateTime to,
+      final Pageable pageable
   );
 
 }
