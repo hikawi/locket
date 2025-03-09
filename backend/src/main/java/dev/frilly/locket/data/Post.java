@@ -1,5 +1,6 @@
 package dev.frilly.locket.data;
 
+import dev.frilly.locket.dto.res.PostResponse;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -40,7 +41,7 @@ public final class Post {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  
+
   @Column(name = "image_link", nullable = false)
   private String imageLink;
 
@@ -85,6 +86,10 @@ public final class Post {
 
   public LocalDateTime time() {
     return time;
+  }
+
+  public PostResponse makeResponse() {
+    return new PostResponse(id, user.makeResponse(), imageLink, message, time);
   }
 
   public Set<Comment> comments() {

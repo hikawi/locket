@@ -17,15 +17,15 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 **Users**:
 
-|   Column   | DataType | Constraint           |
-| :--------: | :------: | -------------------- |
-|     id     |  bigint  | primary key identity |
-|  username  |   text   | unique not null      |
-|   email    |   text   | unique not null      |
-|  password  |   text   | unique not null      |
-| birthdate  |   date   | not null default now |
-| avatar_url |   text   |                      |
-|    role    |   text   | not null             |
+|   Column   | DataType | Constraint            |
+| :--------: | :------: | --------------------- |
+|     id     |  bigint  | primary key identity  |
+|  username  |   text   | unique not null       |
+|   email    |   text   | unique not null       |
+|  password  |   text   | unique not null       |
+| birthdate  |   date   |                       |
+| avatar_url |   text   |                       |
+|    role    |   text   | not null default USER |
 
 **Friendships**:
 
@@ -93,6 +93,19 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 Currently hosted on `https://locket.frilly.dev/`. This does not sync with Git, deploying requires rsync-ing over and re-running the .jar file. The backend is currently on **Spring Boot 3**, ran on **Java 21**.
 
+### Latest Changes (v0.5)
+
+Note: **All paginated route has the following format**: `total`, `totalPages`, `page`, `perPage`, `results`.
+
+- Fix `GET /profiles` returning 403 even when authenticated.
+- Route `GET /posts` is now a paginated route. Changed params `from` to `since` and `to` to `until`.
+- Route `POST /register` doesn't need a `birthdate` field anymore.
+- Route `GET /requests` is now a paginated route.
+- Route `POST /requests` now accepts `id` instead of `username`.
+- Route `DELETE /requests` now accepts `id` instead of `username`.
+- Route `DELETE /friends` now accepts `id` instead of `username`.
+- Route `POST /posts`'s viewers part now require IDs instead of usernames. Now also returns a proper post response.
+
 ### Routes
 
 Security is done via a header `Authorization` with `Bearer <token>`. There are routes that are unauthenticated:
@@ -105,6 +118,8 @@ Security is done via a header `Authorization` with `Bearer <token>`. There are r
 Trying to access a route that does not exist always returns `404 NOT FOUND`. Trying to access an authenticated route without a valid token always returns `401 UNAUTHORIZED`.
 
 Most routes accept `application/json`. Except a few routes that need image data, therefore, those would accept `multipart/form-data` instead.
+
+If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `datetime`, please provide `yyyy-MM-ddThh:mm:ss`.
 
 #### GET `/`
 
@@ -168,7 +183,7 @@ Most routes accept `application/json`. Except a few routes that need image data,
 
 - Sends a friend request or accepts one.
 - Accepts body:
-  - username: string
+  - id (long)
 - Returns:
   - 409 if you already sent a request to that person
   - 403 if the target user is yourself
@@ -180,7 +195,7 @@ Most routes accept `application/json`. Except a few routes that need image data,
 
 - Denies a friend request.
 - Accepts body:
-  - username: string
+  - id (long)
 - Returns:
   - 404 if the target can not be found
   - 204 if nothing was deleted
@@ -193,13 +208,13 @@ Most routes accept `application/json`. Except a few routes that need image data,
   - page (int, default 0)
   - per_page (int, default 20)
 - Returns:
-  - 200 with { total: long, totalPages: int, results: { username: string, avatar: string? }[] }
+  - 200 with { results: { username: string, avatar: string? }[] }
 
 #### DELETE `/friends`
 
 - Removes a friend.
 - Accepts body:
-  - username (string)
+  - id (long)
 - Returns:
   - 404 if username not found
   - 204 if you weren't friends in the first place
@@ -209,10 +224,12 @@ Most routes accept `application/json`. Except a few routes that need image data,
 
 - Retrieves a list of posts I can see, ranging in a timeframe.
 - Accepts query:
-  - from (date)
-  - to (date, default now)
+  - page (int, default 0)
+  - per_page (int, default 20)
+  - since (date)
+  - until (date, default now)
 - Returns:
-  - 200 with { total: long, results: { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date } }
+  - 200 with { results: { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date } }
 
 #### POST `/posts`
 
@@ -220,11 +237,11 @@ Most routes accept `application/json`. Except a few routes that need image data,
 - Accepts body (multipart/form-data):
   - image (file): The image file itself, accepts 10MB max, allows PNG, JPG, WEBP.
   - message (string?): Optional, the message of the post
-  - viewers (string): A comma-separated list of users to share with. Eg: vohoangduc,ducthien,thehung. Empty means private.
+  - viewers (string): A comma-separated list of users to share with. Eg: 1,2,3. Empty means private.
 - Returns:
   - 400 if the file is not a valid image
   - 413 if the file is too big
-  - 201 with header "Location" pointing to the image link
+  - 201 with { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date }
 
 #### PUT `/posts`
 
@@ -251,7 +268,7 @@ Most routes accept `application/json`. Except a few routes that need image data,
   - 403 if the post's author wasn't you
   - 200 with { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date }
 
-#### GET `/messages` (v0.4.1)
+#### GET `/messages`
 
 - Get messages for me within a certain time frame.
 - Accepts query:
@@ -261,7 +278,7 @@ Most routes accept `application/json`. Except a few routes that need image data,
   - until (local date time, optional)
 - Always returns 200 with a paginated object { total, totalPages, page, perPage, results: { id, sender, receiver, content, time, state }[] }
 
-#### POST `/messages` (v0.4.1)
+#### POST `/messages`
 
 - Send a new message to another user.
 - Accepts body:
@@ -273,7 +290,7 @@ Most routes accept `application/json`. Except a few routes that need image data,
   - 403 if the receiver is not your friend
   - 200 with { id, sender, receiver, content, time, state }
 
-#### DELETE `/messages` (v0.4.1)
+#### DELETE `/messages`
 
 - Delete a sent message.
 - Accepts body:

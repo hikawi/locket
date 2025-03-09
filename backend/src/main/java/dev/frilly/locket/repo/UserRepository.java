@@ -52,13 +52,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
   );
 
   /**
-   * Attempts to match users within the list of usernames.
+   * Attempts to match users within the list of IDs.
    *
-   * @param usernames the usernames
+   * @param ids ids
    *
    * @return the list of users
    */
-  @Query("select u from User u where lower(u.username) in :usernames")
-  List<User> findByUsernameIn(final Set<String> usernames);
+  @Query("select u from User u where u.id in :ids")
+  List<User> findByIds(final Set<Long> ids);
 
 }
