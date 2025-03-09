@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application")
+    alias(libs.plugins.android.application)
 }
 
 android {
@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.camera:camera-video:1.3.0")
+    implementation(libs.androidx.camera.video)
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -49,4 +49,5 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation(libs.okhttp3.okhttp)
+    implementation(libs.glide)
 }

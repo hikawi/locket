@@ -8,6 +8,6 @@
 
     <style name="circle_corners">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">9999dp</item>
+        <item name="cornerSize">16dp</item>
     </style>
 </resources>

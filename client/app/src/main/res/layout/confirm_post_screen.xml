@@ -5,9 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="#000000">
+    android:background="@color/black">
 
-    <!-- Header chứa các nút điều hướng -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,24 +20,22 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Gửi đến..."
-            android:textColor="#FFFFFF"
+            android:text="@string/send_to"
+            android:textColor="@color/white"
             android:textSize="20dp"
             android:textStyle="bold"
             android:paddingLeft="50dp"/>
 
         <ImageButton
-            android:id="@+id/downloadButton"
+            android:id="@+id/download_button"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:background="@null"
-            android:contentDescription="Download Button"
+            android:contentDescription="@string/download_button"
             android:scaleType="centerInside"
             android:src="@drawable/download" />
     </LinearLayout>
 
-    <!-- Layout dùng ConstraintLayout để giữ CardView hình vuông -->
-    <!-- Layout hiển thị ảnh/video -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -88,15 +85,15 @@
                 </FrameLayout>
 
                 <EditText
-                    android:id="@+id/messageInput"
+                    android:id="@+id/message_confirm_input"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|bottom"
                     android:background="@drawable/rounded_corner_full"
-                    android:hint="Thêm một tin nhắn"
-                    android:padding="10dp"
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#FFFFFF"
+                    android:hint="@string/text"
+                    android:paddingHorizontal="30dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
                     android:textSize="16sp" />
 
             </FrameLayout>
@@ -104,8 +101,6 @@
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-    <!-- Footer chứa các nút chức năng -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -115,31 +110,30 @@
         android:layout_marginTop="10dp">
 
         <ImageButton
-            android:id="@+id/galleryButton"
+            android:id="@+id/cancel_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@drawable/close"
             android:scaleType="centerInside"
             android:gravity="center"
             android:padding="10dp"
-            android:contentDescription="Gallery Button"
+            android:contentDescription="@string/cancel_button"
             android:backgroundTint="#000000"
-            android:textColor="#FFFFFF"/>
+            android:textColor="@color/white"/>
 
-        <!-- Nút chụp ảnh/quay video -->
         <ImageButton
-            android:id="@+id/captureButton"
+            android:id="@+id/send_button"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@drawable/circle"
             android:scaleType="centerInside"
             android:gravity="center"
             android:padding="10dp"
-            android:contentDescription="Capture Button"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="120dp"
+            android:contentDescription="@string/capture_button"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="120dp"
             android:backgroundTint="#000000"
-            android:textColor="#FFFFFF"/>
+            android:textColor="@color/white"/>
 
 
     </LinearLayout>
@@ -149,7 +143,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.15"
         android:backgroundTint="#000000"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         android:text=""
         android:textSize="20sp"
         android:textStyle="bold"/>

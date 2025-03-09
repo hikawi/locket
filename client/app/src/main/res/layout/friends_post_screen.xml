@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="5dp">
+
+            <ImageButton
+                android:id="@+id/user_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="30dp"
+                android:background="@drawable/rounded_corner_full"
+                android:clipToOutline="true"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/user_avatar"
+                android:src="@drawable/locket_four" />
+
+            <Spinner
+                android:id="@+id/user_filter_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="32dp"
+                android:background="@drawable/rounded_corner_spinner" />
+
+            <ImageButton
+                android:id="@+id/message"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/rounded_corner_full"
+                android:src="@drawable/ic_chat"
+                android:textColor="@android:color/white"
+                android:scaleType="centerInside"
+                android:padding="5dp"
+                android:contentDescription="@string/chat_with_friends"
+                android:layout_marginStart="30dp"/>
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipChildren="false">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cameraCard"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="5dp"
+                app:cardPreventCornerOverlap="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <FrameLayout
+                    android:id="@+id/mediaContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:clipChildren="true"
+                    android:clipToPadding="true">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:adjustViewBounds="false"
+                        android:scaleType="centerCrop"
+                        android:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/message_confirm_input"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|bottom"
+                        android:background="@drawable/rounded_corner_full"
+                        android:hint="@string/text"
+                        android:padding="10dp"
+                        android:textAlignment="center"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#FFFFFF"
+                        android:textSize="16sp" />
+
+                </FrameLayout>
+
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/poster_avatar"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/rounded_corner_full"
+                android:clipToOutline="true"
+                android:scaleType="centerCrop"
+                android:contentDescription="@string/user_avatar"
+                android:src="@drawable/locket_four" />
+
+            <TextView
+                android:id="@+id/poster"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="5dp"
+                android:layout_weight="1"
+                android:text="@string/poster"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/post_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="5dp"
+                android:layout_weight="1"
+                android:text="@string/date"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/message_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/rounded_corner_send_message"
+            android:ems="10"
+            android:hint="@string/send_message"
+            android:inputType="text"
+            android:padding="10dp"
+            android:textColorHint="@color/white"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/menu_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="20dp"
+                android:layout_weight="1"
+                android:background="@color/black"
+                android:contentDescription="@string/select_from_album"
+                android:src="@drawable/menu_16dp"
+                android:textColor="@android:color/white" />
+
+            <ImageButton
+                android:id="@+id/take_photo"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="20dp"
+                android:backgroundTint="@color/black"
+                android:scaleType="centerInside"
+                android:contentDescription="@string/take_a_photo"
+                android:textColor="@android:color/white"
+                android:src="@drawable/circle" />
+
+            <ImageButton
+                android:id="@+id/share_button"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="20dp"
+                android:layout_weight="1"
+                android:background="@color/black"
+                android:contentDescription="@string/change_camera_selfie"
+                android:src="@drawable/share_16dp"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

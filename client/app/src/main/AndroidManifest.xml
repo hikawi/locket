@@ -48,11 +48,18 @@
             android:name=".activities.Register2Activity"
             android:configChanges="orientation|screenSize"
             android:noHistory="true" />
-        <activity android:name=".activities.CameraActivity"
-            android:screenOrientation="portrait"
-            android:exported="false"/>
-        <activity android:name=".activities.ConfirmPostActivity" />
-
+        <activity
+            android:name=".activities.CameraActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.ConfirmPostActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.HistoryActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.FriendsPostActivity"
+            android:configChanges="orientation|screenSize" />
     </application>
 
 </manifest>
