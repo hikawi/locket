@@ -53,6 +53,7 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.okhttp3.okhttp)
     implementation(libs.glide)
+    implementation("com.google.guava:guava:31.0.1-android")
     //scale size unit (support for different screen size)
     implementation("com.intuit.sdp:sdp-android:1.0.6")
     implementation("com.intuit.ssp:ssp-android:1.0.6")
