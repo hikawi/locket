@@ -70,6 +70,9 @@ public final class FriendsController {
     }
 
     friendshipRepo.delete(fs.get());
+
+    // Send a firebase messaging to users
+
     return target.get().makeResponse();
   }
 

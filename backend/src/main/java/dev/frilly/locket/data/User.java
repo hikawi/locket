@@ -4,6 +4,8 @@ import dev.frilly.locket.dto.res.UserResponse;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity model class for a user in the system.
@@ -11,6 +13,9 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "users")
 public final class User {
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<DeviceToken> tokens = new HashSet<>();
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -89,6 +94,15 @@ public final class User {
 
   public User setAvatarUrl(String avatarUrl) {
     this.avatarUrl = avatarUrl;
+    return this;
+  }
+
+  public Set<DeviceToken> tokens() {
+    return tokens;
+  }
+
+  public User setTokens(Set<DeviceToken> tokens) {
+    this.tokens = tokens;
     return this;
   }
 

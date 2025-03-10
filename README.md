@@ -93,19 +93,6 @@ Note: all `text` datatypes mean `varchar(255)`. `fulltext` means long text.
 
 Currently hosted on `https://locket.frilly.dev/`. This does not sync with Git, deploying requires rsync-ing over and re-running the .jar file. The backend is currently on **Spring Boot 3**, ran on **Java 21**.
 
-### Latest Changes (v0.5)
-
-Note: **All paginated route has the following format**: `total`, `totalPages`, `page`, `perPage`, `results`.
-
-- Fix `GET /profiles` returning 403 even when authenticated.
-- Route `GET /posts` is now a paginated route. Changed params `from` to `since` and `to` to `until`.
-- Route `POST /register` doesn't need a `birthdate` field anymore.
-- Route `GET /requests` is now a paginated route.
-- Route `POST /requests` now accepts `id` instead of `username`.
-- Route `DELETE /requests` now accepts `id` instead of `username`.
-- Route `DELETE /friends` now accepts `id` instead of `username`.
-- Route `POST /posts`'s viewers part now require IDs instead of usernames. Now also returns a proper post response.
-
 ### Routes
 
 Security is done via a header `Authorization` with `Bearer <token>`. There are routes that are unauthenticated:
