@@ -1,5 +1,8 @@
 package dev.frilly.locket.controller;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.MulticastMessage;
+import dev.frilly.locket.data.DeviceToken;
 import dev.frilly.locket.data.User;
 import dev.frilly.locket.dto.req.IdRequest;
 import dev.frilly.locket.dto.res.PaginatedResponse;
@@ -25,6 +28,9 @@ public final class FriendsController {
 
   @Autowired
   private UserRepository userRepo;
+
+  @Autowired
+  private FirebaseMessaging messaging;
 
   /**
    * GET /friends.
@@ -71,7 +77,17 @@ public final class FriendsController {
 
     friendshipRepo.delete(fs.get());
 
-    // Send a firebase messaging to users
+    // Send a data message to the target to tell that they have been deleted
+    // from the user's friend list
+    final var deleteMessage = MulticastMessage.builder()
+        .addAllTokens(
+            target.get().tokens().stream().map(DeviceToken::token).toList())
+        .putData("action", "friend_deleted")
+        .putData("deleter_id", String.valueOf(user.id()))
+        .putData("deleter_username", user.username())
+        .putData("deleter_avatar", user.avatarUrl())
+        .build();
+    messaging.sendEachForMulticastAsync(deleteMessage);
 
     return target.get().makeResponse();
   }

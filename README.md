@@ -139,6 +139,24 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
   - 409 if username or email is taken
   - 200 if success, returns { token: string }
 
+#### POST `/subscribe`
+
+- Subscribes with your token to Messaging Service.
+- Accepts body:
+  - token (string)
+- Returns:
+  - 200 with `{ token: string }`
+
+#### DELETE `/subscribe`
+
+- Unsubscribes a device from the Messaging Service.
+- Accepts body:
+  - token (string)
+- Returns:
+  - 404 if that token doesn't exist yet
+  - 403 if that token isn't yours
+  - 200 with `{ token: string }`
+
 #### GET `/profiles`
 
 - Retrieves user's information. If user is authenticated AND username is not provided, then it fetches the user's own profile. If username is provided, it will always fetch that user's profile.
@@ -206,6 +224,7 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
   - 404 if username not found
   - 204 if you weren't friends in the first place
   - 200 if friendship deleted
+- Sends a data message: `{ action: "friend_deleted", deleter_id, deleter_username, deleter_avatar }`
 
 #### GET `/posts`
 

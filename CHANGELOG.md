@@ -11,8 +11,12 @@ We would like our devices to receive the data, for example, new posts, new messa
 >
 > Without it, the backend will not boot.
 
+A **notification message** should instantly notify the device, without any code on Android. A **data message** will be called on a handler on the Android side, this should usually be handled silently.
+
 <details>
 <summary>Changes</summary>
+
+Changes that add data or notification messages, checkout Backend Documentation.
 
 ### Added route `POST /subscribe`
 
@@ -28,6 +32,10 @@ We would like our devices to receive the data, for example, new posts, new messa
   - 404 if the token can not be found.
   - 403 if the token is not yours.
   - 200 if the token is deleted.
+
+### Modified route `DELETE /friends`
+
+- This route now sends a data message.
 
 </details>
 

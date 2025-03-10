@@ -92,7 +92,9 @@ public final class PostsController {
     final var url = uploadImage(image);
     final var obj = new Post(user, url, message);
     obj.viewers().addAll(query);
-    return postRepo.save(obj).makeResponse();
+
+    final var savedObj = postRepo.save(obj);
+    return savedObj.makeResponse();
   }
 
   private String uploadImage(final MultipartFile image) throws
