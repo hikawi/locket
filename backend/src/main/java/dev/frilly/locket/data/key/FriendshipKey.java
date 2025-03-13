@@ -2,6 +2,8 @@ package dev.frilly.locket.data.key;
 
 import jakarta.persistence.Embeddable;
 
+import java.util.Objects;
+
 /**
  * Composite key for {@link dev.frilly.locket.data.Friendship} model.
  */
@@ -33,6 +35,19 @@ public final class FriendshipKey {
 
   public long user2() {
     return user2;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(user1, user2);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof FriendshipKey that)) {
+      return false;
+    }
+    return user1 == that.user1 && user2 == that.user2;
   }
 
 }

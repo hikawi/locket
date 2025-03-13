@@ -224,7 +224,6 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
   - 404 if username not found
   - 204 if you weren't friends in the first place
   - 200 if friendship deleted
-- Sends a data message: `{ action: "friend_deleted", deleter_id, deleter_username, deleter_avatar }`
 
 #### GET `/posts`
 

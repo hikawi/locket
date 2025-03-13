@@ -16,6 +16,8 @@
     <string name="error_username_empty">Username is empty</string>
     <string name="error_password_empty">Password is empty</string>
     <string name="error_email_empty">Email address is empty</string>
+    <string name="error_email_invalid">Email is invalid</string>
+    <string name="error_email_taken">Email was already taken</string>
     <string name="error_password_incorrect">Password is incorrect</string>
     <string name="error_username_not_found">That username doesn\'t exist</string>
     <string name="error_username_taken">That username was taken</string>

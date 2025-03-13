@@ -51,6 +51,19 @@
             android:textFontWeight="200"
             app:layout_constraintTop_toBottomOf="@id/text_new_email" />
 
+        <TextView
+            android:id="@+id/text_error"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="32dp"
+            android:fontFamily="@font/inter"
+            android:gravity="end"
+            android:textColor="@color/tomato"
+            android:textFontWeight="600"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/field_email" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_continue"
             android:layout_width="match_parent"
