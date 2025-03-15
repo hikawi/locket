@@ -87,53 +87,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private class PostLoginCallback implements Callback {
-
-        @Override
-        public void onFailure(@NonNull Call call, @NonNull IOException e) {
-            e.printStackTrace();
-            runOnUiThread(() -> {
-                textError.setText(R.string.error_unknown);
-                loginButton.setEnabled(true);
-            });
-        }
-
-        private void handle(int code, String body) throws Exception {
-            switch (code) {
-                case 404:
-                    textError.setText(R.string.error_username_not_found);
-                    break;
-                case 403:
-                    textError.setText(R.string.error_password_incorrect);
-                    break;
-                case 200:
-                    final var obj = new JSONObject(body);
-                    String token = obj.getString("token");
-                    Authentication.saveToken(LoginActivity.this, token);
-                    Log.d("User Info", "Using token: " + token);
-                    // Gọi API lấy thông tin user
-                    fetchUserInfo(token);
-                    final var intent = new Intent(LoginActivity.this, ChatActivity.class);
-                    startActivity(intent);
-                    break;
-            }
-        }
-
-        @Override
-        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-            final var body = response.body().string();
-            runOnUiThread(() -> {
-                loginButton.setEnabled(true);
-                try {
-                    handle(response.code(), body);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        }
-
-    }
-
     private void fetchUserInfo(String token) {
         Log.d("User Info", "Fetching user info..."); // ✅ Kiểm tra xem có gọi không
         String username = usernameField.getText().toString().trim(); // Lấy username từ input
@@ -160,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                     String responseBody = response.body().string();
                     try {
                         JSONObject userObj = new JSONObject(responseBody);
-                        runOnUiThread(() -> Log.d("User Info", "Fetched: " + userObj.toString()));
+                        runOnUiThread(() -> Log.d("User Info", "Fetched: " + userObj));
 
                         // Lưu thông tin user
                         Authentication.saveUserData(LoginActivity.this, userObj);
@@ -173,6 +126,53 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private class PostLoginCallback implements Callback {
+
+        @Override
+        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            e.printStackTrace();
+            runOnUiThread(() -> {
+                textError.setText(R.string.error_unknown);
+                loginButton.setEnabled(true);
+            });
+        }
+
+        private void handle(int code, String body) throws Exception {
+            switch (code) {
+                case 404:
+                    textError.setText(R.string.error_username_not_found);
+                    break;
+                case 403:
+                    textError.setText(R.string.error_password_incorrect);
+                    break;
+                case 200:
+                    final var obj = new JSONObject(body);
+                    String token = obj.getString("token");
+                    Authentication.saveToken(LoginActivity.this, token);
+                    Log.d("User Info", "Using token: " + token);
+                    // Gọi API lấy thông tin user
+                    fetchUserInfo(token);
+                    final var intent = new Intent(LoginActivity.this, CameraActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+        }
+
+        @Override
+        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            final var body = response.body().string();
+            runOnUiThread(() -> {
+                loginButton.setEnabled(true);
+                try {
+                    handle(response.code(), body);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
     }
 
 }

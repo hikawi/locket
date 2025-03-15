@@ -102,9 +102,15 @@ public class Authentication {
     public static void saveUserData(Context ctx, JSONObject userObj) {
         try {
             final var sharedPrefs = ctx.getSharedPreferences("user_data", Context.MODE_PRIVATE);
-            sharedPrefs.edit()
-                    .putString("user_info", userObj.toString())
-                    .apply();
+            final var editor = sharedPrefs.edit();
+
+            if (userObj != null) {
+                editor.putString("user_info", userObj.toString());
+            } else {
+                editor.remove("user_info");
+            }
+
+            editor.apply();
         } catch (Exception e) {
             e.printStackTrace();
         }

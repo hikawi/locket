@@ -21,6 +21,7 @@ import java.io.IOException;
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
+import dev.frilly.locket.utils.AndroidUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -42,6 +43,8 @@ public class ChangeEmailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_email_screen);
 
+        AndroidUtil.applyInsets(this, R.id.layout_outer);
+
         buttonBack = findViewById(R.id.button_back);
         fieldEmail = findViewById(R.id.field_email);
         textError = findViewById(R.id.text_error);
@@ -49,6 +52,17 @@ public class ChangeEmailActivity extends AppCompatActivity {
 
         buttonBack.setOnClickListener(this::onBack);
         buttonContinue.setOnClickListener(this::onContinue);
+        loadInfo();
+    }
+
+    private void loadInfo() {
+        try {
+            final var profile = Authentication.getUserData(this);
+            final var email = profile.getString("email");
+            fieldEmail.setHint(email);
+        } catch (JSONException e) {
+            Log.e("ChangeEmailActivity", e.getMessage(), e);
+        }
     }
 
     private void onBack(final View view) {

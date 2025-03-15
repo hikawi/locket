@@ -6,6 +6,7 @@ import dev.frilly.locket.dto.req.CredentialsRequest;
 import dev.frilly.locket.dto.req.RegisterRequest;
 import dev.frilly.locket.dto.req.TokenRequest;
 import dev.frilly.locket.dto.res.TokenResponse;
+import dev.frilly.locket.dto.res.UserResponse;
 import dev.frilly.locket.repo.TokenRepository;
 import dev.frilly.locket.repo.UserRepository;
 import dev.frilly.locket.service.JwtService;
@@ -72,6 +73,17 @@ public final class AccountsController {
         .setUsername(body.username())
         .setPassword(encoder.encode(body.password())));
     return new TokenResponse(jwtService.encode(user.id()));
+  }
+
+  /**
+   * Handles the DELETE /accounts request.
+   */
+  @DeleteMapping("/accounts")
+  public UserResponse deleteAccount() {
+    final var auth = SecurityContextHolder.getContext().getAuthentication();
+    final var user = (User) auth.getPrincipal();
+    userRepo.delete(user);
+    return user.makeResponse();
   }
 
   /**

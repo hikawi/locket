@@ -1,5 +1,4 @@
 package dev.frilly.locket.activities;
-import dev.frilly.locket.R;
 
 import android.Manifest;
 import android.content.Context;
@@ -34,7 +33,6 @@ import androidx.camera.video.VideoCapture;
 import androidx.camera.video.VideoRecordEvent;
 import androidx.camera.view.PreviewView;
 import androidx.core.content.ContextCompat;
-import androidx.lifecycle.LifecycleOwner;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -43,17 +41,19 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import dev.frilly.locket.R;
+import dev.frilly.locket.utils.AndroidUtil;
+
 /**
  * Make a post with image
  */
 
 public class CameraActivity extends AppCompatActivity {
+    private static final int LONG_PRESS_DURATION = 500;
     private Context context;
     private boolean isFrontCamera = false;
     private boolean isRecording = false;
     private long pressStartTime;
-    private static final int LONG_PRESS_DURATION = 500;
-
     //private RecyclerView imageList;
     //private MediaAdapter mediaAdapter;
     private ImageButton userAvatar;
@@ -136,6 +136,8 @@ public class CameraActivity extends AppCompatActivity {
             final var intent = new Intent(CameraActivity.this, HistoryActivity.class);
             startActivity(intent);
         });
+
+        userAvatar.setOnClickListener(v -> AndroidUtil.moveScreen(this, ProfileActivity.class));
     }
 
     private void pickMediaFiles() {
@@ -246,10 +248,10 @@ public class CameraActivity extends AppCompatActivity {
 
                 if (videoCapture != null) {
                     Camera camera = cameraProvider.bindToLifecycle(
-                            (LifecycleOwner) this, cameraSelector, preview, imageCapture, videoCapture);
+                            this, cameraSelector, preview, imageCapture, videoCapture);
                 } else {
                     Camera camera = cameraProvider.bindToLifecycle(
-                            (LifecycleOwner) this, cameraSelector, preview, imageCapture);
+                            this, cameraSelector, preview, imageCapture);
                 }
 
             } catch (Exception e) {
@@ -270,20 +272,20 @@ public class CameraActivity extends AppCompatActivity {
                 new ImageCapture.OutputFileOptions.Builder(photoFile).build();
 
         imageCapture.takePicture(outputFileOptions, Executors.newSingleThreadExecutor(),
-            new ImageCapture.OnImageSavedCallback() {
-                @Override
-                public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                    runOnUiThread(() -> {
-                        Toast.makeText(CameraActivity.this, "Capture successfully!", Toast.LENGTH_SHORT).show();
-                        openConfirmPostActivity(photoFile.getAbsolutePath(), "image");
-                    });
-                }
+                new ImageCapture.OnImageSavedCallback() {
+                    @Override
+                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(CameraActivity.this, "Capture successfully!", Toast.LENGTH_SHORT).show();
+                            openConfirmPostActivity(photoFile.getAbsolutePath(), "image");
+                        });
+                    }
 
-                @Override
-                public void onError(@NonNull ImageCaptureException exception) {
-                    runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Error capturing: " + exception.getMessage(), Toast.LENGTH_SHORT).show());
-                }
-            });
+                    @Override
+                    public void onError(@NonNull ImageCaptureException exception) {
+                        runOnUiThread(() -> Toast.makeText(CameraActivity.this, "Error capturing: " + exception.getMessage(), Toast.LENGTH_SHORT).show());
+                    }
+                });
     }
 
     private void startRecording() {
