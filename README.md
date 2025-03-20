@@ -188,7 +188,7 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
 
 - Sends a friend request or accepts one.
 - Accepts body:
-  - id (long)
+  - username (string)
 - Returns:
   - 409 if you already sent a request to that person
   - 403 if the target user is yourself

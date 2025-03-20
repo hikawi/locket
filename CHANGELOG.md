@@ -37,6 +37,10 @@ Changes that add data or notification messages, checkout Backend Documentation.
 
 - This route now sends a data message.
 
+### Modified route `POST /requests`
+
+- This route again, now accepts `username` instead of `id` of the user.
+
 </details>
 
 ## v0.5 - ID Migration

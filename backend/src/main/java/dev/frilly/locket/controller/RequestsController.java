@@ -3,7 +3,7 @@ package dev.frilly.locket.controller;
 import dev.frilly.locket.data.FriendRequest;
 import dev.frilly.locket.data.Friendship;
 import dev.frilly.locket.data.User;
-import dev.frilly.locket.dto.req.IdRequest;
+import dev.frilly.locket.dto.req.UsernameRequest;
 import dev.frilly.locket.dto.res.PaginatedResponse;
 import dev.frilly.locket.dto.res.UserResponse;
 import dev.frilly.locket.repo.FriendRequestRepository;
@@ -59,10 +59,10 @@ public final class RequestsController {
    * Sends a new request.
    */
   @PostMapping("/requests")
-  public UserResponse postRequests(@RequestBody final IdRequest body) {
+  public UserResponse postRequests(@RequestBody final UsernameRequest body) {
     final var auth   = SecurityContextHolder.getContext().getAuthentication();
     final var user   = (User) auth.getPrincipal();
-    final var target = userRepo.findById(body.id());
+    final var target = userRepo.findByUsername(body.username());
 
     if (target.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -101,10 +101,10 @@ public final class RequestsController {
    * Delete a friend request sent.
    */
   @DeleteMapping("/requests")
-  public UserResponse deleteRequest(@Valid @RequestBody final IdRequest body) {
+  public UserResponse deleteRequest(@Valid @RequestBody final UsernameRequest body) {
     final var auth   = SecurityContextHolder.getContext().getAuthentication();
     final var user   = (User) auth.getPrincipal();
-    final var target = userRepo.findById(body.id());
+    final var target = userRepo.findByUsername(body.username());
 
     if (target.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
