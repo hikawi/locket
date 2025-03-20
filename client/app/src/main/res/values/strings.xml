@@ -23,6 +23,7 @@
     <string name="error_username_taken">That username was taken</string>
     <string name="error_password_different">Passwords don\'t match</string>
     <string name="error_birthdate_invalid">Birthdate is invalid</string>
+    <string name="error_invalid">Some data is invalid</string>
     <string name="error_unknown">Unknown error has occurred</string>
 
     <string name="text_back">Back</string>

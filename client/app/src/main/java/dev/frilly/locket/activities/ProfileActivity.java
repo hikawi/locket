@@ -50,6 +50,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ImageButton buttonChangeImage;
     private TextView textName;
 
+    private Button buttonEditInfo;
     private Button buttonChangeEmail;
     private Button buttonAddWidget;
     private Button buttonLogout;
@@ -68,12 +69,17 @@ public class ProfileActivity extends AppCompatActivity {
         imageProfile = findViewById(R.id.image_profile);
         buttonChangeImage = findViewById(R.id.button_change_profile);
         textName = findViewById(R.id.text_name);
+        buttonEditInfo = findViewById(R.id.button_edit_info);
         buttonChangeEmail = findViewById(R.id.button_change_email);
         buttonAddWidget = findViewById(R.id.button_add_widget);
         buttonLogout = findViewById(R.id.button_logout);
         buttonDeleteAccount = findViewById(R.id.button_delete_account);
 
         buttonBack.setOnClickListener(v -> finish());
+        buttonEditInfo.setOnClickListener(e -> {
+            final var intent = new Intent(this, ProfileEditInfoActivity.class);
+            startActivity(intent);
+        });
         buttonChangeEmail.setOnClickListener(v -> AndroidUtil.moveScreen(this,
                 ChangeEmailActivity.class));
         buttonLogout.setOnClickListener(this::onLogoutButton);

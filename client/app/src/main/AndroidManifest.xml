@@ -71,6 +71,9 @@
         <activity
             android:name=".activities.ChangeEmailActivity"
             android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.ProfileEditInfoActivity"
+            android:configChanges="orientation|screenSize" />
 
         <service
             android:name=".firebase.MessagingService"
