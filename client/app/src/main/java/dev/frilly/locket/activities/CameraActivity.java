@@ -127,6 +127,11 @@ public class CameraActivity extends AppCompatActivity {
 
         chooseFromAlbum.setOnClickListener(v -> pickMediaFiles());
 
+        sendMessages.setOnClickListener(v -> {
+            final var intent = new Intent(CameraActivity.this, MessengerActivity.class);
+            startActivity(intent);
+        });
+
         switchCameraButton.setOnClickListener(v -> {
             isFrontCamera = !isFrontCamera;
             startCamera();
