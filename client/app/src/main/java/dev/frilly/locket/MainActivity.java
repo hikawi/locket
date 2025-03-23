@@ -4,7 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import dev.frilly.locket.activities.CameraActivity;
 import dev.frilly.locket.activities.ChatActivity;
@@ -13,7 +18,6 @@ import dev.frilly.locket.PreferenceManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private PreferenceManager preferencesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

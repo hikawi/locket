@@ -1,6 +1,8 @@
 package dev.frilly.locket;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
@@ -8,124 +10,160 @@ import androidx.security.crypto.MasterKey;
 import org.json.JSONObject;
 
 /**
- * Class to check for authentication token.
+ * A utility class for managing authentication tokens and user data securely.
  */
 public class Authentication {
 
+    private static final String TAG = "Authentication";
+    private static final String SECURED_PREFS = "secured_prefs";
+    private static final String USER_PREFS = "user_data";
+    private static final String TOKEN_KEY = "token";
+    private static final String USER_INFO_KEY = "user_info";
+    private static final String USER_ID_KEY = "user_id";
+
     /**
-     * Saves the token.
+     * Saves the authentication token securely.
      *
-     * @param ctx   the context
-     * @param token the token
+     * @param ctx   the application context
+     * @param token the authentication token
      */
     public static void saveToken(final Context ctx, final String token) {
         try {
-            final var key = new MasterKey.Builder(ctx)
+            MasterKey key = new MasterKey.Builder(ctx)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build();
-            final var sharedPrefs = EncryptedSharedPreferences.create(
+
+            SharedPreferences sharedPrefs = EncryptedSharedPreferences.create(
                     ctx,
-                    "secured_prefs",
+                    SECURED_PREFS,
                     key,
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
 
-            sharedPrefs.edit().putString("token", token).apply();
+            sharedPrefs.edit().putString(TOKEN_KEY, token).apply();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Log.e(TAG, "Error saving token", exception);
         }
     }
 
     /**
-     * Gets the token, if available.
+     * Retrieves the stored authentication token.
      *
-     * @param ctx the context
-     * @return the token
+     * @param ctx the application context
+     * @return the stored token, or an empty string if not found
      */
     public static String getToken(final Context ctx) {
         try {
-            final var key = new MasterKey.Builder(ctx)
+            MasterKey key = new MasterKey.Builder(ctx)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build();
-            final var sharedPrefs = EncryptedSharedPreferences.create(
+
+            SharedPreferences sharedPrefs = EncryptedSharedPreferences.create(
                     ctx,
-                    "secured_prefs",
+                    SECURED_PREFS,
                     key,
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
 
-            return sharedPrefs.getString("token", "");
+            return sharedPrefs.getString(TOKEN_KEY, "");
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Log.e(TAG, "Error retrieving token", exception);
             return "";
         }
     }
 
     /**
-     * Removes the token field.
+     * Removes the authentication token.
      *
-     * @param ctx the context
+     * @param ctx the application context
      */
     public static void unauthenticate(final Context ctx) {
         try {
-            final var key = new MasterKey.Builder(ctx)
+            MasterKey key = new MasterKey.Builder(ctx)
                     .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                     .build();
-            final var sharedPrefs = EncryptedSharedPreferences.create(
+
+            SharedPreferences sharedPrefs = EncryptedSharedPreferences.create(
                     ctx,
-                    "secured_prefs",
+                    SECURED_PREFS,
                     key,
                     EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             );
 
-            sharedPrefs.edit().remove("token").apply();
+            sharedPrefs.edit().remove(TOKEN_KEY).apply();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            Log.e(TAG, "Error during unauthentication", exception);
         }
     }
 
     /**
-     * Quick authentication check.
+     * Checks if a user is authenticated.
      *
-     * @param ctx the context
-     * @return if it is authenticated
+     * @param ctx the application context
+     * @return true if authenticated, false otherwise
      */
     public static boolean isAuthenticated(final Context ctx) {
-        final var token = getToken(ctx);
+        String token = getToken(ctx);
         return token != null && !token.isBlank();
     }
 
-    // Lưu User Data vào SharedPreferences
+    /**
+     * Saves user data into SharedPreferences, including userId.
+     *
+     * @param ctx     the application context
+     * @param userObj the user JSON object containing user details
+     */
     public static void saveUserData(Context ctx, JSONObject userObj) {
         try {
-            final var sharedPrefs = ctx.getSharedPreferences("user_data", Context.MODE_PRIVATE);
-            final var editor = sharedPrefs.edit();
+            SharedPreferences sharedPrefs = ctx.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPrefs.edit();
 
-            if (userObj != null) {
-                editor.putString("user_info", userObj.toString());
-            } else {
-                editor.remove("user_info");
+            editor.putString(USER_INFO_KEY, userObj.toString());
+
+            // Save userId separately for quick access
+            if (userObj.has("id")) {
+                editor.putString(USER_ID_KEY, userObj.getString("id"));
             }
 
             editor.apply();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error saving user data", e);
         }
     }
 
-    // Lấy User Data từ SharedPreferences
+    /**
+     * Retrieves the stored user data.
+     *
+     * @param ctx the application context
+     * @return the user JSON object, or an empty object if not found
+     */
     public static JSONObject getUserData(Context ctx) {
         try {
-            final var sharedPrefs = ctx.getSharedPreferences("user_data", Context.MODE_PRIVATE);
-            String userData = sharedPrefs.getString("user_info", "{}");
+            SharedPreferences sharedPrefs = ctx.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+            String userData = sharedPrefs.getString(USER_INFO_KEY, "{}");
             return new JSONObject(userData);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, "Error retrieving user data", e);
             return new JSONObject();
         }
     }
 
+    /**
+     * Retrieves the stored userId.
+     *
+     * @param ctx the application context
+     * @return the userId as a string, or an empty string if not found
+     */
+    public static String getUserId(Context ctx) {
+        try {
+            SharedPreferences sharedPrefs = ctx.getSharedPreferences(USER_PREFS, Context.MODE_PRIVATE);
+            return sharedPrefs.getString(USER_ID_KEY, "");
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving user ID", e);
+            return "";
+        }
+    }
 }

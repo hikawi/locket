@@ -1,8 +1,10 @@
 package dev.frilly.locket.model;
 
-import java.sql.Timestamp;
+import com.google.firebase.Timestamp;
 
 public class User {
+
+    private String userId;
     private String username;
     private String email;
     private String password;
@@ -12,12 +14,21 @@ public class User {
     public User() {
     }
 
-    public User(String dob, String username, String email, String password, Timestamp createdTimestamp) {
+    public User(String dob, String username, String email, String password, Timestamp createdTimestamp, String userId) {
         this.dob = dob;
         this.username = username;
         this.email = email;
         this.password = password;
         this.createdTimestamp = createdTimestamp;
+        this.userId = userId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -58,5 +69,8 @@ public class User {
 
     public void setCreatedTimestamp(Timestamp createdTimestamp) {
         this.createdTimestamp = createdTimestamp;
+    }
+
+    public void setText(String username) {
     }
 }

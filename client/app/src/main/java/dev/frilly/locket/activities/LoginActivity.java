@@ -12,9 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
@@ -128,6 +134,77 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void fetchUserInfo(String token, OnUserIdFetchedListener listener) {
+        Log.d("User Info", "Fetching user info...");
+
+        String username = usernameField.getText().toString().trim();
+        Request request = new Request.Builder()
+                .url(Constants.BACKEND_URL + "profiles?username=" + username)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        Constants.HTTP_CLIENT.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                Log.e("User Info", "Request failed: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    try {
+                        JSONObject userObj = new JSONObject(responseBody);
+                        String userId = userObj.getString("id");
+
+                        runOnUiThread(() -> {
+                            Log.d("User Info", "Fetched userId: " + userId);
+                            listener.onUserIdFetched(userId);
+                        });
+
+                        saveUserToFirebase(userObj);
+
+                    } catch (Exception e) {
+                        Log.e("User Info", "JSON Parse Error: " + e.getMessage());
+                    }
+                } else {
+                    Log.e("User Info", "Failed response: " + response.code());
+                }
+            }
+        });
+    }
+
+    private void saveUserToFirebase(JSONObject userObj) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        try {
+            String userId = userObj.getString("id"); // ID người dùng
+            String username = userObj.getString("username");
+            String email = userObj.getString("email");
+            String avatar = userObj.optString("avatar", ""); // Nếu không có thì để trống
+
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("username", username);
+            userMap.put("email", email);
+            userMap.put("userId", userId);
+            userMap.put("avatar", avatar);
+            userMap.put("updatedAt", System.currentTimeMillis());
+
+            db.collection("users").document(userId)
+                    .set(userMap, SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> Log.d("Firebase", "User data updated"))
+                    .addOnFailureListener(e -> Log.e("Firebase", "Error updating user", e));
+
+        } catch (Exception e) {
+            Log.e("Firebase", "JSON Error: " + e.getMessage());
+        }
+    }
+
+    interface OnUserIdFetchedListener {
+        void onUserIdFetched(String userId);
+    }
+
     private class PostLoginCallback implements Callback {
 
         @Override
@@ -152,10 +229,29 @@ public class LoginActivity extends AppCompatActivity {
                     String token = obj.getString("token");
                     Authentication.saveToken(LoginActivity.this, token);
                     Log.d("User Info", "Using token: " + token);
-                    // Gọi API lấy thông tin user
-                    fetchUserInfo(token);
-                    final var intent = new Intent(LoginActivity.this, CameraActivity.class);
-                    startActivity(intent);
+
+                    // Gọi API lấy userId trước khi cập nhật Firestore
+                    FirebaseAuth.getInstance().signOut();
+
+                    fetchUserInfo(token, userId -> {
+                        FirebaseAuth auth = FirebaseAuth.getInstance();
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                        auth.signInAnonymously()
+                                .addOnSuccessListener(authResult -> {
+                                    String firebaseUid = auth.getUid();
+
+                                    // Cập nhật Firebase UID vào Firestore với userId thực sự
+                                    db.collection("users").document(userId)
+                                            .update("firebaseUid", firebaseUid)
+                                            .addOnSuccessListener(aVoid -> Log.d("Firebase", "Firebase UID updated"))
+                                            .addOnFailureListener(e -> Log.e("Firebase", "Error updating UID", e));
+                                })
+                                .addOnFailureListener(e -> Log.e("Firebase", "Anonymous sign-in failed", e));
+
+                        final var intent = new Intent(LoginActivity.this, CameraActivity.class);
+                        startActivity(intent);
+                    });
                     break;
             }
         }

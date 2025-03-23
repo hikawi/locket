@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.security.crypto)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.storage)
 
     testImplementation(libs.junit)
     implementation(libs.camera.core)
@@ -65,8 +67,13 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.firestore)
     implementation("com.google.firebase:firebase-auth")
-
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.2")
+    implementation("com.squareup.picasso:picasso:2.8") // Thư viện load ảnh
 
     //MultiDex
     implementation("androidx.multidex:multidex:2.0.1")
+
+    //Glude
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 }
