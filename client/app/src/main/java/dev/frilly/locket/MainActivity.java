@@ -2,19 +2,14 @@ package dev.frilly.locket;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
+import androidx.room.Room;
 
 import dev.frilly.locket.activities.CameraActivity;
-import dev.frilly.locket.activities.ChatActivity;
 import dev.frilly.locket.activities.WelcomeActivity;
-import dev.frilly.locket.PreferenceManager;
+import dev.frilly.locket.room.LocalDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Authentication.unauthenticate(this);
+        Constants.ROOM = Room.databaseBuilder(getApplicationContext(), LocalDatabase.class,
+                "locket-local").build();
 
         // If the user is already logged in, saved in SharedPreferences,
         // continue the main activity.

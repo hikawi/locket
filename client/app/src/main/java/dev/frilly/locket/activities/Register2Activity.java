@@ -29,7 +29,9 @@ import java.util.regex.Pattern;
 
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
+import dev.frilly.locket.MainActivity;
 import dev.frilly.locket.R;
+import dev.frilly.locket.services.ProfileService;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -134,25 +136,33 @@ public class Register2Activity extends AppCompatActivity implements DatePickerDi
 
     private class PutProfilesCallback implements Callback {
 
-        @Override
-        public void onFailure(@NonNull Call call, @NonNull IOException e) {
-            e.printStackTrace();
+        private void setErrorUnknown() {
             runOnUiThread(() -> errorText.setText(R.string.error_unknown));
         }
 
         @Override
+        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            e.printStackTrace();
+            setErrorUnknown();
+        }
+
+        @Override
         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-            Log.d("dev.frilly.locket", String.valueOf(response.code()));
-            Log.d("dev.frilly.locket", response.body().string());
+            Log.d("PutProfilesCallback", String.valueOf(response.code()));
+            Log.d("PutProfilesCallback", response.body().string());
 
-            runOnUiThread(() -> {
-                if (response.code() != 200) {
-                    errorText.setText(R.string.error_unknown);
-                    return;
+            if (!response.isSuccessful()) {
+                setErrorUnknown();
+                return;
+            }
+
+            ProfileService.getInstance().fetch(Register2Activity.this).thenAccept(status -> {
+                if (status) {
+                    final var intent = new Intent(Register2Activity.this, MainActivity.class);
+                    startActivity(intent);
+                } else {
+                    setErrorUnknown();
                 }
-
-                final var intent = new Intent(Register2Activity.this, WelcomeActivity.class);
-                startActivity(intent);
             });
         }
 

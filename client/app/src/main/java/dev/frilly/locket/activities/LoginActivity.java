@@ -25,6 +25,7 @@ import java.util.Map;
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
+import dev.frilly.locket.services.ProfileService;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -91,47 +92,6 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void fetchUserInfo(String token) {
-        Log.d("User Info", "Fetching user info..."); // ✅ Kiểm tra xem có gọi không
-        String username = usernameField.getText().toString().trim(); // Lấy username từ input
-
-        Request request = new Request.Builder()
-                .url(Constants.BACKEND_URL + "profiles?username=" + username) // Thêm username vào URL
-                .addHeader("Authorization", "Bearer " + token)
-                .build();
-
-        Constants.HTTP_CLIENT.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e("User Info", "Request failed: " + e.getMessage());
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                runOnUiThread(() -> {
-                    Log.d("User Info", "Response received, code: " + response.code());
-                });
-
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    try {
-                        JSONObject userObj = new JSONObject(responseBody);
-                        runOnUiThread(() -> Log.d("User Info", "Fetched: " + userObj));
-
-                        // Lưu thông tin user
-                        Authentication.saveUserData(LoginActivity.this, userObj);
-
-                    } catch (Exception e) {
-                        Log.e("User Info", "JSON Parse Error: " + e.getMessage());
-                    }
-                } else {
-                    Log.e("User Info", "Failed response: " + response.code());
-                }
-            }
-        });
     }
 
     private void fetchUserInfo(String token, OnUserIdFetchedListener listener) {
@@ -230,6 +190,17 @@ public class LoginActivity extends AppCompatActivity {
                     Authentication.saveToken(LoginActivity.this, token);
                     Log.d("User Info", "Using token: " + token);
 
+                    // Fetch user's info and put into Room.
+                    // Only if the status returns OK.
+                    ProfileService.getInstance().fetch(LoginActivity.this).thenAccept(status -> {
+                        if (status) {
+                            final var intent = new Intent(LoginActivity.this, CameraActivity.class);
+                            startActivity(intent);
+                        } else {
+                            runOnUiThread(() -> textError.setText(R.string.error_unknown));
+                        }
+                    });
+
                     // Gọi API lấy userId trước khi cập nhật Firestore
                     FirebaseAuth.getInstance().signOut();
 
@@ -248,9 +219,6 @@ public class LoginActivity extends AppCompatActivity {
                                             .addOnFailureListener(e -> Log.e("Firebase", "Error updating UID", e));
                                 })
                                 .addOnFailureListener(e -> Log.e("Firebase", "Anonymous sign-in failed", e));
-
-                        final var intent = new Intent(LoginActivity.this, CameraActivity.class);
-                        startActivity(intent);
                     });
                     break;
             }

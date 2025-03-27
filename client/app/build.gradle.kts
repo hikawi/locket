@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+    val room_version = "2.6.1"
+
     implementation(libs.androidx.camera.video)
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -55,6 +57,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation(libs.okhttp3.okhttp)
     implementation(libs.glide)
+    annotationProcessor(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.guava)
+
     implementation("com.google.guava:guava:31.0.1-android")
     //scale size unit (support for different screen size)
     implementation("com.intuit.sdp:sdp-android:1.0.6")
