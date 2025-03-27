@@ -14,29 +14,29 @@ import java.util.Set;
 @Table(name = "posts")
 public final class Post {
 
-  @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private final User user;
-
   @ManyToMany
   @JoinTable(
       name = "post_viewers", joinColumns = {@JoinColumn(name = "post_id")},
       inverseJoinColumns = {@JoinColumn(name = "user_id")}
   )
-  private final Set<User> viewers = new HashSet<>();
+  private final Set<User> viewers;
 
+  @OneToMany(
+      mappedBy = "post", cascade = {CascadeType.ALL}, orphanRemoval = true
+  )
+  private final Set<Comment> comments;
+
+  @OneToMany(
+      mappedBy = "post", cascade = {CascadeType.ALL}, orphanRemoval = true
+  )
+  private final Set<Reaction> reactions;
+  
   @Column(nullable = false)
-  private final LocalDateTime time = LocalDateTime.now();
+  private final LocalDateTime time;
 
-  @OneToMany(
-      mappedBy = "post", cascade = {CascadeType.ALL}, orphanRemoval = true
-  )
-  private final Set<Comment> comments = new HashSet<>();
-
-  @OneToMany(
-      mappedBy = "post", cascade = {CascadeType.ALL}, orphanRemoval = true
-  )
-  private final Set<Reaction> reactions = new HashSet<>();
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,9 +49,17 @@ public final class Post {
   private String message;
 
   public Post(User user, String imageLink, String message) {
+    this();
     this.user      = user;
     this.imageLink = imageLink;
     this.message   = message;
+  }
+
+  public Post() {
+    time      = LocalDateTime.now();
+    comments  = new HashSet<>();
+    viewers   = new HashSet<>();
+    reactions = new HashSet<>();
   }
 
   public long id() {

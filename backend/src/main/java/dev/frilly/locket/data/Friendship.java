@@ -16,15 +16,18 @@ public final class Friendship {
   @ManyToOne
   @MapsId("user1")
   @JoinColumn(name = "user1", nullable = false)
-  private final User user1;
+  private User user1;
 
   @ManyToOne
   @MapsId("user2")
   @JoinColumn(name = "user2", nullable = false)
-  private final User user2;
-  
+  private User user2;
+
   @EmbeddedId
   private FriendshipKey key;
+
+  public Friendship() {
+  }
 
   public Friendship(User user1, User user2) {
     this.user1 = user1;

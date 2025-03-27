@@ -16,23 +16,28 @@ import java.time.LocalDateTime;
 public final class FriendRequest {
 
   @Column(nullable = false)
-  private final LocalDateTime time = LocalDateTime.now();
+  private final LocalDateTime time;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "sender_id", nullable = false)
-  private final User sender;
+  private User sender;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "receiver_id", nullable = false)
-  private final User receiver;
+  private User receiver;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   public FriendRequest(User sender, User receiver) {
+    this();
     this.sender   = sender;
     this.receiver = receiver;
+  }
+
+  public FriendRequest() {
+    time = LocalDateTime.now();
   }
 
   public long id() {

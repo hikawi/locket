@@ -12,19 +12,19 @@ import java.time.LocalDateTime;
 @Table(name = "messages")
 public final class Message {
 
+  @Column(nullable = false)
+  private final LocalDateTime time;
+
   @ManyToOne
   @JoinColumn(name = "sender_id", nullable = false)
-  private final User sender;
+  private User sender;
 
   @ManyToOne
   @JoinColumn(name = "receiver_id", nullable = false)
-  private final User receiver;
+  private User receiver;
 
   @Column(nullable = false, columnDefinition = "text")
-  private final String content;
-
-  @Column(nullable = false)
-  private final LocalDateTime time = LocalDateTime.now();
+  private String content;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +32,18 @@ public final class Message {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private State state = State.SENT;
+  private State state;
 
   public Message(User sender, User receiver, String content) {
+    this();
     this.sender   = sender;
     this.receiver = receiver;
     this.content  = content;
+  }
+
+  public Message() {
+    state = State.SENT;
+    time  = LocalDateTime.now();
   }
 
   public Message setState(State state) {

@@ -10,27 +10,32 @@ import jakarta.persistence.*;
 @Table(name = "reactions")
 public final class Reaction {
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private final ReactionType reaction;
+
   @EmbeddedId
-  private final ReactionKey id;
+  private ReactionKey id;
 
   @ManyToOne(cascade = {CascadeType.ALL})
   @MapsId("postId")
   @JoinColumn(name = "post_id", nullable = false)
-  private final Post post;
+  private Post post;
 
   @ManyToOne(cascade = {CascadeType.ALL})
   @MapsId("userId")
   @JoinColumn(name = "user_id", nullable = false)
-  private final User user;
-
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private final ReactionType reaction = ReactionType.LIKE;
+  private User user;
 
   public Reaction(Post post, User user) {
+    this();
     this.id   = new ReactionKey(post.id(), user.id());
     this.post = post;
     this.user = user;
+  }
+
+  public Reaction() {
+    reaction = ReactionType.LIKE;
   }
 
   public ReactionKey id() {

@@ -84,7 +84,8 @@ public final class GlobalControllerAdvice {
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<ErrorResponse> handleStatusException(final ResponseStatusException ex) {
     return ResponseEntity.status(ex.getStatusCode())
-        .body(new ErrorResponse(ex.getStatusCode().value(), ex.getReason()));
+        .body(new ErrorResponse(ex.getStatusCode().value(),
+            String.valueOf(ex.getReason())));
   }
 
 }

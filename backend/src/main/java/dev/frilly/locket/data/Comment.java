@@ -11,28 +11,33 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 public final class Comment {
 
+  @Column(nullable = false)
+  private final LocalDateTime time;
+
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
-  private final User user;
+  private User user;
 
   @ManyToOne
   @JoinColumn(name = "post_id", nullable = false)
-  private final Post post;
+  private Post post;
 
   @Column(nullable = false, columnDefinition = "text")
-  private final String content;
-
-  @Column(nullable = false)
-  private final LocalDateTime time = LocalDateTime.now();
-
+  private String content;
+  
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   public Comment(User user, Post post, String content) {
+    this();
     this.user    = user;
     this.post    = post;
     this.content = content;
+  }
+
+  public Comment() {
+    time = LocalDateTime.now();
   }
 
   public long id() {
