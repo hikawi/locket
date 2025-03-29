@@ -95,14 +95,19 @@ Currently hosted on `https://locket.frilly.dev/`. This does not sync with Git, d
 
 ### Routes
 
+#### Authorization
+
 Security is done via a header `Authorization` with `Bearer <token>`. There are routes that are unauthenticated:
 
 - POST `/login`
 - POST `/register`
 - GET `/`
-- GET `/profiles` (partially)
+- GET `/profiles`
 
-Trying to access a route that does not exist always returns `404 NOT FOUND`. Trying to access an authenticated route without a valid token always returns `401 UNAUTHORIZED`.
+Trying to access a route that does not exist always returns `403 FORBIDDEN`. 
+Trying to access an authenticated route without a valid token always returns `401 UNAUTHORIZED`.
+
+#### Routing Data
 
 Most routes accept `application/json`. Except a few routes that need image data, therefore, those would accept `multipart/form-data` instead.
 
@@ -181,8 +186,14 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
 #### GET `/requests`
 
 - Retrieves a list of friend requests.
+- Accepts query parameters:
+  - page (number, default 0)
+  - per_page (number, default 20)
+  - myself (boolean, default false): Whether to show requests that you sent. 
+    If true, show requests that you sent others. If false, show requests 
+    that you received.
 - Returns:
-  - 200 with { results: { username: string, avatar: string? }[] }
+  - 200 with { results: { id: long, username: string, avatar: string? }[] }
 
 #### POST `/requests`
 

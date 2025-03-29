@@ -16,6 +16,19 @@ public interface FriendRequestRepository
     extends JpaRepository<FriendRequest, Long> {
 
   /**
+   * Gets all friend requests from the sender's POV.
+   *
+   * @param sender   the sender
+   * @param pageable paging object
+   *
+   * @return a page of friend requests
+   */
+  Page<FriendRequest> findAllBySender(
+      final User sender,
+      final Pageable pageable
+  );
+
+  /**
    * Gets all friend requests from the receiver's POV.
    *
    * @return the list of requests

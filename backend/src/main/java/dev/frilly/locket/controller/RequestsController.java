@@ -11,12 +11,15 @@ import dev.frilly.locket.repo.FriendshipRepository;
 import dev.frilly.locket.repo.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.function.Function;
 
 /**
  * Controller for handling friend requests.
@@ -41,17 +44,28 @@ public final class RequestsController {
   @GetMapping("/requests")
   public PaginatedResponse<UserResponse> getRequests(
       @RequestParam(value = "page", defaultValue = "0") int page,
-      @RequestParam(value = "per_page", defaultValue = "20") int perPage
+      @RequestParam(value = "per_page", defaultValue = "20") int perPage,
+      @RequestParam(value = "myself", defaultValue = "false") boolean myself
   ) {
     final var auth = SecurityContextHolder.getContext().getAuthentication();
     final var user = (User) auth.getPrincipal();
 
-    final var query = frRepo.findAllByReceiver(user,
-        PageRequest.of(page, perPage, Sort.by("user1")));
+    final Page<FriendRequest>                   query;
+    final Function<FriendRequest, UserResponse> mapFunction;
+
+    if (myself) {
+      query       = frRepo.findAllBySender(user,
+          PageRequest.of(page, perPage, Sort.by("receiver.id")));
+      mapFunction = fr -> fr.receiver().makeResponse();
+    } else {
+      query       = frRepo.findAllByReceiver(user,
+          PageRequest.of(page, perPage, Sort.by("user1")));
+      mapFunction = fr -> fr.sender().makeResponse();
+    }
 
     return new PaginatedResponse<>(query.getTotalElements(),
         query.getTotalPages(), page, perPage,
-        query.get().map(fr -> fr.sender().makeResponse()).toList());
+        query.get().map(mapFunction).toList());
   }
 
   /**
