@@ -211,7 +211,7 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
 
 - Denies a friend request.
 - Accepts body:
-  - id (long)
+  - username (string)
 - Returns:
   - 404 if the target can not be found
   - 204 if nothing was deleted

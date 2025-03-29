@@ -13,23 +13,23 @@ import jakarta.persistence.*;
 )
 public final class Friendship {
 
+  @EmbeddedId
+  private final FriendshipKey key;
   @ManyToOne
   @MapsId("user1")
   @JoinColumn(name = "user1", nullable = false)
   private User user1;
-
   @ManyToOne
   @MapsId("user2")
   @JoinColumn(name = "user2", nullable = false)
   private User user2;
 
-  @EmbeddedId
-  private FriendshipKey key;
-
   public Friendship() {
+    key = new FriendshipKey();
   }
 
   public Friendship(User user1, User user2) {
+    key        = new FriendshipKey(user1.id(), user2.id());
     this.user1 = user1;
     this.user2 = user2;
   }

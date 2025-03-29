@@ -124,13 +124,15 @@ public final class RequestsController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
     }
 
-    final var fr = frRepo.findBySenderAndReceiver(user, target.get());
+    final var sentFr     = frRepo.findBySenderAndReceiver(user, target.get());
+    final var receivedFr = frRepo.findBySenderAndReceiver(target.get(), user);
 
-    if (fr.isEmpty()) {
+    if (sentFr.isEmpty() && receivedFr.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NO_CONTENT);
     }
 
-    frRepo.delete(fr.get());
+    sentFr.ifPresent(frRepo::delete);
+    receivedFr.ifPresent(frRepo::delete);
     return target.get().makeResponse();
   }
 

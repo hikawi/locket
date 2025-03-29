@@ -110,6 +110,16 @@ public final class User {
     return new UserResponse(id, username, email, avatarUrl, birthdate);
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof User && ((User) obj).id == id;
+  }
+
   /**
    * The role for a user, in case we need some administrative routes.
    */

@@ -10,8 +10,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.CompletableFuture;
 
 import dev.frilly.locket.Authentication;
@@ -87,20 +88,26 @@ public final class RequestService {
 
                 for (int i = 0; i < array.length(); i++) {
                     final var friendObj = array.getJSONObject(i);
+                    Log.d("RequestService", friendObj.toString());
+
                     final var profile = new UserProfile();
                     profile.id = friendObj.getLong("id");
                     profile.username = friendObj.getString("username");
                     profile.email = friendObj.getString("email");
-                    profile.avatarUrl = friendObj.getString("avatar");
+                    profile.avatarUrl = friendObj.optString("avatar", null);
                     profile.friendState = state;
 
                     if (!friendObj.isNull("birthdate")) {
                         final var bDayString = friendObj.getString("birthdate");
-                        profile.birthdate = LocalDateTime.parse(bDayString).toEpochSecond(ZoneOffset.UTC);
+                        final var formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+                        final var localDate = LocalDate.parse(bDayString, formatter);
+                        profile.birthdate =
+                                localDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
                     }
 
                     userDao.insert(profile);
                 }
+                Log.d("RequestService", "Successfully inserted " + array.length() + " objects");
             } catch (JSONException ex) {
                 Log.e("RequestService", ex.getMessage(), ex);
             }
@@ -164,6 +171,7 @@ public final class RequestService {
                             myself));
                 }
 
+                Log.d("GetRequestsCallback", "Inserting requests " + state.name() + " with " + future);
                 insertRequests(obj.getJSONArray("results"), state, hasNewPage ? null : future);
             } catch (Exception e) {
                 Log.e("GetRequestsCallback", e.getMessage(), e);

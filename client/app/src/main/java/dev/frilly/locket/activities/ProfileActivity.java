@@ -35,6 +35,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
@@ -166,7 +167,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             final var avatar = profile.getString("avatar");
             if (avatar != null)
-                Glide.with(this).load(avatar).into(imageProfile);
+                Glide.with(this).load(avatar).circleCrop().into(imageProfile);
 
             final var name = profile.getString("username");
             textName.setText(name);
@@ -192,6 +193,7 @@ public class ProfileActivity extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
+        Constants.HTTP_CLIENT = new OkHttpClient();
     }
 
     private void onDeleteAccountButton(final View view) {

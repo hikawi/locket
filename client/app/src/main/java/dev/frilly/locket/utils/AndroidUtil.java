@@ -13,6 +13,10 @@ import androidx.core.view.WindowInsetsCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+
 import dev.frilly.locket.model.User;
 
 public class AndroidUtil {
@@ -47,6 +51,18 @@ public class AndroidUtil {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    /**
+     * Converts a dateString of form yyyy-MM-dd to a long representing the epoch milliseconds.
+     *
+     * @param dateString the date string
+     * @return the epoch milliseconds
+     */
+    public static long dateStringToMillis(final String dateString) {
+        final var formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        final var localDate = LocalDate.parse(dateString, formatter);
+        return localDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli();
     }
 
     public static void passUserModelAsIntent(Intent intent, User model) {

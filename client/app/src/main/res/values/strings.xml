@@ -54,9 +54,10 @@
 
     <string name="text_send">Send</string>
     <string name="text_your_friends">Your friends</string>
-    <string name="text_sent_requests">Sent Requests</string>
-    <string name="text_received_requests">Received Requests</string>
     <string name="text_description_sent">Awaiting response...</string>
     <string name="text_description_received">Wants to be your friend</string>
     <string name="text_more">More</string>
+    <string name="error_username_invalid">Username is invalid</string>
+    <string name="error_already_requested">You already sent a friend request</string>
+    <string name="error_self">Silly you!</string>
 </resources>

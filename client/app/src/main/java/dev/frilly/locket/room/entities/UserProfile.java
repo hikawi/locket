@@ -48,7 +48,7 @@ public class UserProfile implements Comparable<UserProfile> {
     @Override
     public int compareTo(UserProfile userProfile) {
         if (friendState != userProfile.friendState)
-            return userProfile.friendState.ordinal() - friendState.ordinal();
+            return friendState.compareTo(userProfile.friendState);
         return username.compareToIgnoreCase(userProfile.username);
     }
 

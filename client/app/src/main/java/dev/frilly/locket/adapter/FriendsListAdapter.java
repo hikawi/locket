@@ -2,6 +2,7 @@ package dev.frilly.locket.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +27,10 @@ import dev.frilly.locket.room.entities.UserProfile;
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.Holder> {
 
     private final Context context;
-    private final BiConsumer<Integer, FriendsListAdapter> destructiveAction;
+    private final BiConsumer<UserProfile, FriendsListAdapter> destructiveAction;
 
     private List<UserProfile> dataSource;
+    private BiConsumer<UserProfile, FriendsListAdapter> acceptAction;
 
     /**
      * Initializes a friends list adapter that displays "friends_recycler_row" layout in a list.
@@ -38,7 +40,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
      *                          button on the a row. Takes in the row number and the adapter.
      */
     public FriendsListAdapter(Context context,
-                              BiConsumer<Integer, FriendsListAdapter> destructiveAction) {
+                              BiConsumer<UserProfile, FriendsListAdapter> destructiveAction) {
         this.context = context;
         this.destructiveAction = destructiveAction;
     }
@@ -59,6 +61,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         this.notifyDataSetChanged();
     }
 
+    public void setAcceptAction(BiConsumer<UserProfile, FriendsListAdapter> acceptAction) {
+        this.acceptAction = acceptAction;
+    }
+
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -75,8 +81,14 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         holder.usernameView.setText(profile.username);
 
         holder.descriptionView.setVisibility(View.VISIBLE);
+        holder.acceptButton.setVisibility(View.GONE);
+        holder.usernameView.setTextColor(context.getColor(R.color.white));
+        holder.usernameView.setTypeface(Typeface.DEFAULT);
+
         switch (profile.friendState) {
             case FRIEND:
+                holder.usernameView.setTextColor(context.getColor(R.color.gold));
+                holder.usernameView.setTypeface(Typeface.DEFAULT_BOLD);
                 holder.descriptionView.setVisibility(View.GONE);
                 holder.destructiveButton.setImageResource(R.drawable.ic_person_remove);
                 break;
@@ -85,6 +97,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                 holder.destructiveButton.setImageResource(R.drawable.ic_cancel_send);
                 break;
             case RECEIVED_REQUEST:
+                holder.acceptButton.setVisibility(View.VISIBLE);
             default:
                 holder.descriptionView.setText(R.string.text_description_received);
                 holder.destructiveButton.setImageResource(R.drawable.ic_deny);
@@ -104,6 +117,8 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         public ImageView imageView;
         public TextView usernameView;
         public TextView descriptionView;
+
+        public ImageButton acceptButton;
         public ImageButton destructiveButton;
 
         public Holder(@NonNull View itemView, FriendsListAdapter adapter) {
@@ -113,12 +128,19 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
             imageView = itemView.findViewById(R.id.image_profile);
             usernameView = itemView.findViewById(R.id.text_name);
             descriptionView = itemView.findViewById(R.id.text_description);
+            acceptButton = itemView.findViewById(R.id.button_accept);
             destructiveButton = itemView.findViewById(R.id.button_delete);
+
+            acceptButton.setOnClickListener(this::onAcceptClick);
             destructiveButton.setOnClickListener(this::onDestructiveClick);
         }
 
+        private void onAcceptClick(final View view) {
+            adapter.acceptAction.accept(adapter.dataSource.get(getBindingAdapterPosition()), adapter);
+        }
+
         private void onDestructiveClick(final View view) {
-            adapter.destructiveAction.accept(getBindingAdapterPosition(), adapter);
+            adapter.destructiveAction.accept(adapter.dataSource.get(getBindingAdapterPosition()), adapter);
         }
 
     }

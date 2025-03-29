@@ -107,14 +107,13 @@ public class CameraActivity extends AppCompatActivity {
             if (!status)
                 return;
 
-            final var friends =
-                    Constants.ROOM.userProfileDao().getProfiles(UserProfile.FriendState.FRIEND);
-
-            runOnUiThread(() -> {
-                friendsButton.setText(String.format("%d friend%s", friends.size(),
-                        friends.size() == 1 ? "" : "s"));
+            final var friends = Constants.ROOM.userProfileDao().getProfiles();
+            runOnUiThread(() -> friends.observe(this, liveData -> {
+                final var count = liveData.stream().filter(d -> d.friendState == UserProfile.FriendState.FRIEND)
+                        .count();
+                friendsButton.setText(String.format("%d friend%s", count, count == 1 ? "" : "s"));
                 friendsButton.invalidate();
-            });
+            }));
         });
 
         // Initialize ActivityResultLauncher
