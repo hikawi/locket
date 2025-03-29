@@ -56,5 +56,7 @@
     <string name="text_your_friends">Your friends</string>
     <string name="text_sent_requests">Sent Requests</string>
     <string name="text_received_requests">Received Requests</string>
+    <string name="text_description_sent">Awaiting response...</string>
+    <string name="text_description_received">Wants to be your friend</string>
     <string name="text_more">More</string>
 </resources>

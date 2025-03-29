@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "101ac48ab061dab143a8fecae1453d98",
+    "identityHash": "375f6119d5e11420a6480dda757f387a",
     "entities": [
       {
         "tableName": "UserProfile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `username` TEXT, `email` TEXT, `avatarUrl` TEXT, `birthdate` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `username` TEXT, `email` TEXT, `avatarUrl` TEXT, `birthdate` INTEGER NOT NULL, `friendState` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -37,6 +37,12 @@
             "columnName": "birthdate",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "friendState",
+            "columnName": "friendState",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -71,7 +77,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '101ac48ab061dab143a8fecae1453d98')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '375f6119d5e11420a6480dda757f387a')"
     ]
   }
 }

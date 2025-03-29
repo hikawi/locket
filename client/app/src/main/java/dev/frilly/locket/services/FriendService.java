@@ -45,11 +45,14 @@ public final class FriendService {
      */
     public CompletableFuture<Boolean> fetchFriends(final Context ctx) {
         final var future = new CompletableFuture<Boolean>();
+        Log.d("FriendService", "Fetching friends using provided context");
 
         // Delete all friends before fetching, we should only fetch once per app start.
-        final var userDao = Constants.ROOM.userProfileDao();
-        final var users = userDao.getProfiles();
-        users.forEach(userDao::delete);
+        CompletableFuture.runAsync(() -> {
+            final var userDao = Constants.ROOM.userProfileDao();
+            userDao.deleteByFriendState(UserProfile.FriendState.FRIEND);
+            Log.d("FriendService", "Deleting all friends saved");
+        });
 
         // Keeps fetching new pages on the thread until all pages are fetched fully, recursively.
         try {
@@ -70,24 +73,39 @@ public final class FriendService {
         return future;
     }
 
-    private void insertFriends(final JSONArray array) throws JSONException {
-        final var userDao = Constants.ROOM.userProfileDao();
+    private void insertFriends(final CompletableFuture<Boolean> future, final JSONArray array) {
+        Log.d("FriendService", "Inserting with array of length " + array.length());
+        CompletableFuture.runAsync(() -> {
+            try {
+                final var userDao = Constants.ROOM.userProfileDao();
 
-        for (int i = 0; i < array.length(); i++) {
-            final var friendObj = array.getJSONObject(i);
-            final var profile = new UserProfile();
-            profile.id = friendObj.getLong("id");
-            profile.username = friendObj.getString("username");
-            profile.email = friendObj.getString("email");
-            profile.avatarUrl = friendObj.getString("avatar");
+                for (int i = 0; i < array.length(); i++) {
+                    final var friendObj = array.getJSONObject(i);
+                    Log.d("FriendService", "Inserting object " + friendObj);
 
-            final var bDayString = friendObj.optString("birthdate");
-            if (bDayString != null) {
-                profile.birthdate = LocalDateTime.parse(bDayString).toEpochSecond(ZoneOffset.UTC);
+                    final var profile = new UserProfile();
+                    profile.id = friendObj.getLong("id");
+                    profile.username = friendObj.getString("username");
+                    profile.email = friendObj.getString("email");
+                    profile.avatarUrl = friendObj.getString("avatar");
+                    profile.friendState = UserProfile.FriendState.FRIEND;
+
+                    if (!friendObj.isNull("birthdate")) {
+                        final var bDayString = friendObj.getString("birthdate");
+                        profile.birthdate = LocalDateTime.parse(bDayString).toEpochSecond(ZoneOffset.UTC);
+                    }
+
+                    userDao.insert(profile);
+                }
+            } catch (JSONException e) {
+                Log.e("FriendService", e.getMessage(), e);
             }
 
-            userDao.insert(new UserProfile());
-        }
+            if (future != null) {
+                Log.d("FriendService", "Completing future");
+                future.complete(true);
+            }
+        });
     }
 
     private final class GetFriendsCallback implements Callback {
@@ -116,11 +134,12 @@ public final class FriendService {
             try {
                 final var obj = new JSONObject(response.body().string());
                 Log.i("GetFriendsCallback", obj.toString());
-                insertFriends(obj.getJSONArray("results"));
+
+                final var newPage = obj.getInt("totalPages") > obj.getInt("page") + 1;
 
                 // If there are more pages, fetch them too.
                 // If not, then it's done.
-                if (obj.getInt("totalPages") > obj.getInt("page") + 1) {
+                if (newPage) {
                     final var req = new Request.Builder()
                             .url(Constants.BACKEND_URL + "friends?page=" + (obj.getInt("page") + 1))
                             .header("Authorization", "Bearer " + Authentication.getToken(context))
@@ -129,9 +148,9 @@ public final class FriendService {
 
                     Constants.HTTP_CLIENT.newCall(req).enqueue(new GetFriendsCallback(future,
                             context));
-                } else {
-                    future.complete(true);
                 }
+
+                insertFriends(newPage ? null : future, obj.getJSONArray("results"));
             } catch (Exception e) {
                 Log.e("GetFriendsCallback", e.getMessage(), e);
                 future.complete(false);

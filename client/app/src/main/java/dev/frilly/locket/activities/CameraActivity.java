@@ -1,6 +1,7 @@
 package dev.frilly.locket.activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -41,7 +43,10 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
+import dev.frilly.locket.room.entities.UserProfile;
+import dev.frilly.locket.services.FriendService;
 import dev.frilly.locket.utils.AndroidUtil;
 
 /**
@@ -72,6 +77,7 @@ public class CameraActivity extends AppCompatActivity {
     private PreviewView previewView;
     private ActivityResultLauncher<Intent> mediaPickerLauncher;
 
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,6 +100,22 @@ public class CameraActivity extends AppCompatActivity {
         } else {
             startCamera();
         }
+
+        // Fetch friends and put in the friends button how many friends we fetched.
+        FriendService.getInstance().fetchFriends(this).thenAccept(status -> {
+            Log.d("CameraActivity", "Fetched friends accepted status " + status);
+            if (!status)
+                return;
+
+            final var friends =
+                    Constants.ROOM.userProfileDao().getProfiles(UserProfile.FriendState.FRIEND);
+
+            runOnUiThread(() -> {
+                friendsButton.setText(String.format("%d friend%s", friends.size(),
+                        friends.size() == 1 ? "" : "s"));
+                friendsButton.invalidate();
+            });
+        });
 
         // Initialize ActivityResultLauncher
         mediaPickerLauncher = registerForActivityResult(

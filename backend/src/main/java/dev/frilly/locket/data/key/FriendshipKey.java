@@ -10,8 +10,11 @@ import java.util.Objects;
 @Embeddable
 public final class FriendshipKey {
 
-  private final long user1;
-  private final long user2;
+  private long user1;
+  private long user2;
+
+  public FriendshipKey() {
+  }
 
   /**
    * Constructs a new friendship key.

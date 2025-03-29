@@ -25,7 +25,6 @@ import dev.frilly.locket.room.entities.UserProfile;
  */
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.Holder> {
 
-    private final boolean isFriendList;
     private final Context context;
     private final BiConsumer<Integer, FriendsListAdapter> destructiveAction;
 
@@ -35,16 +34,12 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
      * Initializes a friends list adapter that displays "friends_recycler_row" layout in a list.
      *
      * @param context           The context that is responsible for this list adapter.
-     * @param isFriendList      Whether to change the end-icon into a "friend-remove" icon or a normal
-     *                          "close-delete" icon. See {@code ic_close.xml} and {@code
-     *                          ic_person_remove.xml}.
      * @param destructiveAction The action to do when the user clicks on the destructive action
      *                          button on the a row. Takes in the row number and the adapter.
      */
-    public FriendsListAdapter(Context context, boolean isFriendList,
+    public FriendsListAdapter(Context context,
                               BiConsumer<Integer, FriendsListAdapter> destructiveAction) {
         this.context = context;
-        this.isFriendList = isFriendList;
         this.destructiveAction = destructiveAction;
     }
 
@@ -69,13 +64,32 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final var view = LayoutInflater.from(parent.getContext()).inflate(R.layout.friends_recycler_row,
                 parent, false);
-        return new Holder(view, this, isFriendList);
+        return new Holder(view, this);
     }
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        Glide.with(context).load(dataSource.get(position).avatarUrl).circleCrop().into(holder.imageView);
-        holder.usernameView.setText(dataSource.get(position).username);
+        final var profile = dataSource.get(position);
+
+        Glide.with(context).load(profile.avatarUrl).circleCrop().into(holder.imageView);
+        holder.usernameView.setText(profile.username);
+
+        holder.descriptionView.setVisibility(View.VISIBLE);
+        switch (profile.friendState) {
+            case FRIEND:
+                holder.descriptionView.setVisibility(View.GONE);
+                holder.destructiveButton.setImageResource(R.drawable.ic_person_remove);
+                break;
+            case SENT_REQUEST:
+                holder.descriptionView.setText(R.string.text_description_sent);
+                holder.destructiveButton.setImageResource(R.drawable.ic_cancel_send);
+                break;
+            case RECEIVED_REQUEST:
+            default:
+                holder.descriptionView.setText(R.string.text_description_received);
+                holder.destructiveButton.setImageResource(R.drawable.ic_deny);
+                break;
+        }
     }
 
     @Override
@@ -89,19 +103,18 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
         public ImageView imageView;
         public TextView usernameView;
+        public TextView descriptionView;
+        public ImageButton destructiveButton;
 
-        public Holder(@NonNull View itemView, FriendsListAdapter adapter, boolean isFriendList) {
+        public Holder(@NonNull View itemView, FriendsListAdapter adapter) {
             super(itemView);
             this.adapter = adapter;
 
             imageView = itemView.findViewById(R.id.image_profile);
             usernameView = itemView.findViewById(R.id.text_name);
-
-            if (isFriendList) {
-                final ImageButton destructiveButton = itemView.findViewById(R.id.button_delete);
-                destructiveButton.setImageResource(R.drawable.ic_person_remove);
-                destructiveButton.setOnClickListener(this::onDestructiveClick);
-            }
+            descriptionView = itemView.findViewById(R.id.text_description);
+            destructiveButton = itemView.findViewById(R.id.button_delete);
+            destructiveButton.setOnClickListener(this::onDestructiveClick);
         }
 
         private void onDestructiveClick(final View view) {

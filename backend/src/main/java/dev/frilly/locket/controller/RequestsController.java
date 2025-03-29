@@ -59,7 +59,7 @@ public final class RequestsController {
       mapFunction = fr -> fr.receiver().makeResponse();
     } else {
       query       = frRepo.findAllByReceiver(user,
-          PageRequest.of(page, perPage, Sort.by("user1")));
+          PageRequest.of(page, perPage, Sort.by("sender.id")));
       mapFunction = fr -> fr.sender().makeResponse();
     }
 
