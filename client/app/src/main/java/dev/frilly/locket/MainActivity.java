@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import dev.frilly.locket.activities.CameraActivity;
 import dev.frilly.locket.activities.ChatActivity;
 import dev.frilly.locket.activities.WelcomeActivity;

@@ -128,7 +128,7 @@ public class CameraActivity extends AppCompatActivity {
         chooseFromAlbum.setOnClickListener(v -> pickMediaFiles());
 
         sendMessages.setOnClickListener(v -> {
-            final var intent = new Intent(CameraActivity.this, MessengerActivity.class);
+            final var intent = new Intent(CameraActivity.this, RecentChatsActivity.class);
             startActivity(intent);
         });
 

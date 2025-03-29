@@ -85,12 +85,21 @@ public class FirebaseUtil {
         return FirebaseFirestore.getInstance().collection("chatrooms");
     }
 
-    public static DocumentReference getOtherUserFromChatroom(List<String> userIds){
-        if(userIds.get(0).equals(FirebaseUtil.currentUserId())){
-            return allUserCollectionReference().document(userIds.get(1));
-        }else{
-            return allUserCollectionReference().document(userIds.get(0));
-        }
+    public static void getOtherUserFromChatroom(List<String> userIds, Callback<DocumentReference> callback) {
+        getCurrentUserId(currentUserId -> {
+            if (currentUserId == null) {
+                callback.onResult(null);
+                return;
+            }
+
+            for (String userId : userIds) {
+                if (!userId.equals(currentUserId)) {
+                    callback.onResult(FirebaseFirestore.getInstance().collection("users").document(userId));
+                    return;
+                }
+            }
+            callback.onResult(null);
+        });
     }
 
     public static String timestampToString(Timestamp timestamp){
