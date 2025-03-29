@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_outer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/dark_slate">
+
+    <ImageButton
+        android:id="@+id/button_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/transparent"
+        android:src="@drawable/ic_arrow_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/label_friends_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="@font/inter"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/field_username"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/rounded_corner"
+        android:hint="@string/text_username"
+        android:paddingHorizontal="16dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white_50"
+        app:layout_constraintEnd_toStartOf="@id/button_send_request"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/label_friends_count" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/button_send_request"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/inter"
+        android:text="@string/text_send"
+        android:textColor="@color/black"
+        android:textFontWeight="600"
+        app:backgroundTint="@color/gold"
+        app:cornerRadius="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/field_username"
+        app:layout_constraintTop_toBottomOf="@id/label_friends_count" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_friends"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/field_username">
+
+        <TextView
+            android:id="@+id/label_friends"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter"
+            android:text="@string/text_your_friends"
+            android:textColor="@color/white"
+            android:textFontWeight="800"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_friends"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/label_friends" />
+
+        <View
+            android:id="@+id/view_friends_decorative"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@drawable/rounded_corner"
+            android:backgroundTint="@color/medium_slate"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/button_friends_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_friends_more" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_friends_more"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:fontFamily="@font/inter"
+            android:text="@string/text_more"
+            android:textFontWeight="600"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:backgroundTint="@color/slate"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recycler_friends" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_sent_requests"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_friends">
+
+        <TextView
+            android:id="@+id/label_sent_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter"
+            android:text="@string/text_sent_requests"
+            android:textColor="@color/white"
+            android:textFontWeight="800"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_sent_requests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/label_sent_requests" />
+
+        <View
+            android:id="@+id/view_sent_requests_decorative"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@drawable/rounded_corner"
+            android:backgroundTint="@color/medium_slate"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/button_sent_requests_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_sent_requests_more" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_sent_requests_more"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:fontFamily="@font/inter"
+            android:text="@string/text_more"
+            android:textFontWeight="600"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:backgroundTint="@color/slate"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recycler_sent_requests" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_received_requests"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layout_sent_requests">
+
+        <TextView
+            android:id="@+id/label_received_requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter"
+            android:text="@string/text_received_requests"
+            android:textColor="@color/white"
+            android:textFontWeight="800"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_received_requests"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/label_received_requests" />
+
+        <View
+            android:id="@+id/view_received_requests_decorative"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:background="@drawable/rounded_corner"
+            android:backgroundTint="@color/medium_slate"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/button_received_requests_more"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_received_requests_more" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_received_requests_more"
+            android:layout_width="wrap_content"
+            android:layout_height="54dp"
+            android:fontFamily="@font/inter"
+            android:text="@string/text_more"
+            android:textFontWeight="600"
+            android:textSize="18sp"
+            android:visibility="gone"
+            app:backgroundTint="@color/slate"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recycler_received_requests" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

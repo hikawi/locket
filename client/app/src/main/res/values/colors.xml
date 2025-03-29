@@ -3,8 +3,10 @@
     <color name="transparent">#00000000</color>
     <color name="black">#FF000000</color>
     <color name="dark_slate">#FF201F1F</color>
+    <color name="medium_slate">#FFD8D0D0</color>
     <color name="very_light_gray">#FFCACFD0</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="white_50">#88FFFFFF</color>
     <color name="red">#FFFF0000</color>
     <color name="tomato">#FFFF7253</color>
     <color name="gold">#FFE3B008</color>

@@ -83,6 +83,9 @@
         <activity
             android:name=".activities.MessengerActivity"
             android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".activities.FriendsActivity"
+            android:configChanges="orientation|screenSize" />
 
         <service
             android:name=".firebase.MessagingService"

@@ -16,6 +16,12 @@ android {
         versionName = "1.0"
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += "room.schemaLocation" to "$projectDir/schemas"
+            }
+        }
     }
 
     buildTypes {
@@ -37,8 +43,6 @@ android {
 }
 
 dependencies {
-    val room_version = "2.6.1"
-
     implementation(libs.androidx.camera.video)
     implementation(libs.appcompat)
     implementation(libs.material)

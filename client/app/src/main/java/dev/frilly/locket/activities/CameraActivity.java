@@ -57,6 +57,7 @@ public class CameraActivity extends AppCompatActivity {
     //private RecyclerView imageList;
     //private MediaAdapter mediaAdapter;
     private ImageButton userAvatar;
+    private Button friendsButton;
     private ImageButton sendMessages;
     private ImageButton captureButton;
     private ImageButton chooseFromAlbum;
@@ -77,6 +78,7 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.camera_screen);
 
         userAvatar = findViewById(R.id.main_user_avatar);
+        friendsButton = findViewById(R.id.friends);
         sendMessages = findViewById(R.id.message);
         captureButton = findViewById(R.id.take_photo);
         chooseFromAlbum = findViewById(R.id.menu_button);
@@ -102,6 +104,11 @@ public class CameraActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        friendsButton.setOnClickListener(v -> {
+            final var intent = new Intent(this, FriendsActivity.class);
+            startActivity(intent);
+        });
 
         captureButton.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {

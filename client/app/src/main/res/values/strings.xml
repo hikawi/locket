@@ -51,4 +51,10 @@
     <string name="gallery_button">Gallery Button</string>
     <string name="capture_button">Capture Button</string>
     <string name="cancel_button">cancel_button</string>
+
+    <string name="text_send">Send</string>
+    <string name="text_your_friends">Your friends</string>
+    <string name="text_sent_requests">Sent Requests</string>
+    <string name="text_received_requests">Received Requests</string>
+    <string name="text_more">More</string>
 </resources>

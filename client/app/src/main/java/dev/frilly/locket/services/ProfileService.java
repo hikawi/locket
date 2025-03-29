@@ -86,8 +86,10 @@ public final class ProfileService {
                 final var body = new JSONObject(response.body().string());
                 Authentication.saveUserData(context, body);
                 Log.i("GetSelfProfilesCallback", body.toString());
+                future.complete(true);
             } catch (JSONException e) {
                 Log.e("GetSelfProfilesCallback", e.getMessage(), e);
+                future.complete(false);
             }
         }
 
