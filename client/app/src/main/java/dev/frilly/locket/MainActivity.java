@@ -7,6 +7,8 @@ import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.room.Room;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import dev.frilly.locket.activities.CameraActivity;
 import dev.frilly.locket.activities.WelcomeActivity;
 import dev.frilly.locket.room.LocalDatabase;

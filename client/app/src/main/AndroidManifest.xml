@@ -33,6 +33,8 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity android:name=".activities.RecentChatsActivity"
+            android:configChanges="orientation|screenSize"/>
 
         <activity
             android:name=".MainActivity"
