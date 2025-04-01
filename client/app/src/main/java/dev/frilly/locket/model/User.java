@@ -11,6 +11,8 @@ public class User {
     private String dob;
     private Timestamp createdTimestamp;
 
+    private String fcmToken;
+
     public User() {
     }
 
@@ -69,6 +71,14 @@ public class User {
 
     public void setCreatedTimestamp(Timestamp createdTimestamp) {
         this.createdTimestamp = createdTimestamp;
+    }
+
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 
     public void setText(String username) {
