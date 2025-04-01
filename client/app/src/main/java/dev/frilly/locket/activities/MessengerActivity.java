@@ -16,13 +16,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import dev.frilly.locket.R;
-import dev.frilly.locket.adapter.ListUserApdater;
+import dev.frilly.locket.adapter.ListUserAdapter;
 import dev.frilly.locket.model.User;
 
 public class MessengerActivity extends AppCompatActivity {
     private static final String TAG = "MessengerActivity";
     private RecyclerView recyclerView;
-    private ListUserApdater userAdapter;
+    private ListUserAdapter userAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +64,12 @@ public class MessengerActivity extends AppCompatActivity {
                         .setQuery(query, User.class)
                         .build();
 
-        userAdapter = new ListUserApdater(options);
+        userAdapter = new ListUserAdapter(options);
         userAdapter.setHasStableIds(true); // Enable stable IDs to help RecyclerView track items
         recyclerView.setAdapter(userAdapter);
+
+        // Gọi hàm fetchFriendsAndLoadUsers để lọc danh sách bạn bè
+        ListUserAdapter.fetchFriendsAndLoadUsers(userAdapter);
     }
 
     @Override

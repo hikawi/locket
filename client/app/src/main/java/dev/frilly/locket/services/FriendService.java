@@ -17,6 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.room.entities.UserProfile;
+import dev.frilly.locket.utils.AndroidUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -92,7 +93,8 @@ public final class FriendService {
 
                     if (!friendObj.isNull("birthdate")) {
                         final var bDayString = friendObj.getString("birthdate");
-                        profile.birthdate = LocalDateTime.parse(bDayString).toEpochSecond(ZoneOffset.UTC);
+
+                        profile.birthdate = AndroidUtil.dateStringToMillis(bDayString);
                     }
 
                     userDao.insert(profile);
