@@ -10,13 +10,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.concurrent.CompletableFuture;
 
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.room.entities.UserProfile;
+import dev.frilly.locket.utils.AndroidUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -87,12 +86,17 @@ public final class FriendService {
                     profile.id = friendObj.getLong("id");
                     profile.username = friendObj.getString("username");
                     profile.email = friendObj.getString("email");
-                    profile.avatarUrl = friendObj.getString("avatar");
                     profile.friendState = UserProfile.FriendState.FRIEND;
+
+                    if (!friendObj.isNull("avatar")) {
+                        profile.avatarUrl = friendObj.getString("avatar");
+                        Log.d("FriendService", "Parsing avatarURL");
+                    }
 
                     if (!friendObj.isNull("birthdate")) {
                         final var bDayString = friendObj.getString("birthdate");
-                        profile.birthdate = LocalDateTime.parse(bDayString).toEpochSecond(ZoneOffset.UTC);
+                        profile.birthdate = AndroidUtil.dateStringToMillis(bDayString);
+                        Log.d("FriendService", "Parsing birthdate " + profile.birthdate);
                     }
 
                     userDao.insert(profile);

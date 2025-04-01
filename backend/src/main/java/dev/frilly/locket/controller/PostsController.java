@@ -52,8 +52,7 @@ public final class PostsController {
       @RequestParam LocalDateTime since,
       @RequestParam(required = false) LocalDateTime until
   ) {
-    final var auth      = SecurityContextHolder.getContext()
-        .getAuthentication();
+    final var auth = SecurityContextHolder.getContext().getAuthentication();
     final var user      = (User) auth.getPrincipal();
     final var untilTime = until == null ? LocalDateTime.now() : until;
 
@@ -110,7 +109,7 @@ public final class PostsController {
 
     try {
       final var res = cloudinary.uploader().upload(image.getBytes(), Map.of());
-      return (String) res.get("url");
+      return (String) res.get("secure_url");
     } catch (IOException ex) {
       ex.printStackTrace();
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);

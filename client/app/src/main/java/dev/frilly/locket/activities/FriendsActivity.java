@@ -258,8 +258,11 @@ public class FriendsActivity extends AppCompatActivity {
                 profile.id = body.getLong("id");
                 profile.username = body.getString("username");
                 profile.email = body.getString("email");
-                profile.avatarUrl = body.getString("avatar");
                 profile.friendState = UserProfile.FriendState.SENT_REQUEST;
+
+                if (!body.isNull("avatar")) {
+                    profile.avatarUrl = body.getString("avatar");
+                }
 
                 if (!body.isNull("birthdate")) {
                     profile.birthdate = AndroidUtil.dateStringToMillis(body.getString("birthdate"));
