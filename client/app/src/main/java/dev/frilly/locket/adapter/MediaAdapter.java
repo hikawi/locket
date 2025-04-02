@@ -1,4 +1,4 @@
-package dev.frilly.locket.activities;
+package dev.frilly.locket.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,8 +14,10 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import dev.frilly.locket.R;
+import dev.frilly.locket.model.Post;
+
 public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> {
-    private ArrayList<PostData> postList;
+    private ArrayList<Post> postList;
     private Context context;
     private OnItemClickListener onItemClickListener;
 
@@ -23,7 +25,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
         void onItemClick(int position);
     }
 
-    public MediaAdapter(ArrayList<PostData> postList, Context context, OnItemClickListener onItemClickListener) {
+    public MediaAdapter(ArrayList<Post> postList, Context context, OnItemClickListener onItemClickListener) {
         this.postList = postList;
         this.context = context;
         this.onItemClickListener = onItemClickListener;
@@ -38,7 +40,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PostData post = postList.get(position);
+        Post post = postList.get(position);
         Glide.with(context).load(post.getImageUrl()).into(holder.imageView);
     }
 
@@ -56,7 +58,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
 
             itemView.setOnClickListener(v -> {
                 if (listener != null) {
-                    listener.onItemClick(getAdapterPosition());
+                    listener.onItemClick(getBindingAdapterPosition());
                 }
             });
         }

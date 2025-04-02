@@ -82,7 +82,10 @@ dependencies {
     //MultiDex
     implementation("androidx.multidex:multidex:2.0.1")
 
-    //Glude
+    //Glide
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    // Google Play Service Location
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }

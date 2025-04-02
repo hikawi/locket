@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:gravity="center"
     android:background="@color/black">
@@ -22,9 +23,9 @@
             android:gravity="center"
             android:text="@string/send_to"
             android:textColor="@color/white"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:paddingLeft="50dp"/>
+            android:paddingStart="50dp"/>
 
         <ImageButton
             android:id="@+id/download_button"
@@ -36,70 +37,20 @@
             android:src="@drawable/download" />
     </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:clipChildren="false">
+        android:clipChildren="false"/>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cameraCard"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clipChildren="false"
-            android:clipToPadding="false"
-            app:cardCornerRadius="50dp"
-            app:cardElevation="5dp"
-            app:cardPreventCornerOverlap="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <FrameLayout
-                android:id="@+id/mediaContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:clipChildren="true"
-                android:clipToPadding="true">
-
-                <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="false"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center">
-
-                    <SurfaceView
-                        android:id="@+id/surfaceView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
-                </FrameLayout>
-
-                <EditText
-                    android:id="@+id/message_confirm_input"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center|bottom"
-                    android:background="@drawable/rounded_corner_full"
-                    android:hint="@string/text"
-                    android:paddingHorizontal="30dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/white"
-                    android:textSize="16sp" />
-
-            </FrameLayout>
-
-        </androidx.cardview.widget.CardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:id="@+id/dots_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:padding="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -135,16 +86,20 @@
             android:backgroundTint="#000000"
             android:textColor="@color/white"/>
 
-
     </LinearLayout>
-    <TextView
-        android:id="@+id/button8"
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/friends_recycler"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.15"
-        android:backgroundTint="#000000"
-        android:textColor="@color/white"
-        android:text=""
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+        android:layout_height="100dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:layout_marginTop="4dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_friend_avatar" />
+
 </LinearLayout>

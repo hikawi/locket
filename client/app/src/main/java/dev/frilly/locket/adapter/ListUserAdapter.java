@@ -22,12 +22,12 @@ import dev.frilly.locket.model.User;
 import dev.frilly.locket.utils.AndroidUtil;
 import dev.frilly.locket.utils.FirebaseUtil;
 
-public class ListUserApdater extends FirestoreRecyclerAdapter<User, ListUserApdater.UserViewHolder> {
+public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdapter.UserViewHolder> {
 
     String currentUserId;
 
 
-    public ListUserApdater(@NonNull FirestoreRecyclerOptions<User> options) {
+    public ListUserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
     }
 
