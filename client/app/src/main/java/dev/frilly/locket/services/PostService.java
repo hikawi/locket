@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -51,56 +52,69 @@ public final class PostService {
         String fromDate = LocalDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         String toDate = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-        Request request = new Request.Builder()
-                .url(Constants.BACKEND_URL + "posts?since=" + fromDate + "&until=" + toDate)
-                .get()
-                .addHeader("Authorization", "Bearer " + Authentication.getToken(ctx))
-                .build();
+        try {
+            final var req = new Request.Builder()
+                    .url(Constants.BACKEND_URL + "posts?since=" + fromDate + "&until=" + toDate)
+                    .get()
+                    .addHeader("Authorization", "Bearer " + Authentication.getToken(ctx))
+                    .build();
 
-        Constants.HTTP_CLIENT.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                Log.e("PostService", "Failed to fetch posts", e);
-                future.complete(false);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!response.isSuccessful() || response.body() == null) {
-                    Log.e("PostService", "Unsuccessful response: " + response.code());
-                    future.complete(false);
-                    return;
-                }
-
-                try {
-                    String body = response.body().string();
-                    JSONObject json = new JSONObject(body);
-                    JSONArray results = json.getJSONArray("results");
-
-                    List<Post> posts = new ArrayList<>();
-                    for (int i = 0; i < results.length(); i++) {
-                        JSONObject postObject = results.getJSONObject(i);
-                        JSONObject poster = postObject.getJSONObject("poster");
-
-                        posts.add(new Post(
-                                postObject.getString("imageLink"),
-                                poster.getString("username"),
-                                postObject.getString("message"),
-                                postObject.getString("time")
-                        ));
-                    }
-
-                    // Cache the posts once parsed
-                    PostCache.getInstance().setPosts(posts);
-                    future.complete(true);
-
-                } catch (JSONException e) {
-                    Log.e("PostService", "Failed to parse JSON", e);
-                    future.complete(false);
-                }
-            }
-        });
+            Constants.HTTP_CLIENT.newCall(req).enqueue(new GetPostsCallback(future));
+        } catch (Exception e) {
+            Log.e("PostService", e.getMessage(), e);
+            future.complete(false);
+        }
 
         return future;
     }
+
+    private static final class GetPostsCallback implements Callback {
+        private final CompletableFuture<Boolean> future;
+
+        public GetPostsCallback(CompletableFuture<Boolean> future) {
+            this.future = future;
+        }
+        @Override
+        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            Log.e("PostService", "Failed to fetch posts", e);
+            future.complete(false);
+        }
+
+        @Override
+        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            if (!response.isSuccessful() || response.body() == null) {
+                Log.e("PostService", "Unsuccessful response: " + response.code());
+                future.complete(false);
+                return;
+            }
+
+            try {
+                String body = response.body().string();
+                JSONObject json = new JSONObject(body);
+                JSONArray results = json.getJSONArray("results");
+
+                List<Post> posts = new ArrayList<>();
+                for (int i = 0; i < results.length(); i++) {
+                    JSONObject postObject = results.getJSONObject(i);
+                    JSONObject poster = postObject.getJSONObject("poster");
+
+                    posts.add(new Post(
+                            postObject.getString("imageLink"),
+                            poster.getString("username"),
+                            postObject.getString("message"),
+                            postObject.getString("time")
+                    ));
+                }
+
+                // Cache the posts once parsed
+                PostCache.getInstance().setPosts(posts);
+                future.complete(true);
+
+            } catch (JSONException e) {
+                Log.e("PostService", "Failed to parse JSON", e);
+                future.complete(false);
+            }
+        }
+    }
+
 }
