@@ -40,13 +40,17 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
+import dev.frilly.locket.model.Post;
+import dev.frilly.locket.model.PostCache;
 import dev.frilly.locket.room.entities.UserProfile;
 import dev.frilly.locket.services.FriendService;
+import dev.frilly.locket.services.PostService;
 import dev.frilly.locket.utils.AndroidUtil;
 
 /**
@@ -59,8 +63,6 @@ public class CameraActivity extends AppCompatActivity {
     private boolean isFrontCamera = false;
     private boolean isRecording = false;
     private long pressStartTime;
-    //private RecyclerView imageList;
-    //private MediaAdapter mediaAdapter;
     private ImageButton userAvatar;
     private Button friendsButton;
     private ImageButton sendMessages;
@@ -77,7 +79,7 @@ public class CameraActivity extends AppCompatActivity {
     private PreviewView previewView;
     private ActivityResultLauncher<Intent> mediaPickerLauncher;
 
-    @SuppressLint("DefaultLocale")
+    @SuppressLint({"DefaultLocale", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,8 +88,8 @@ public class CameraActivity extends AppCompatActivity {
         userAvatar = findViewById(R.id.main_user_avatar);
         friendsButton = findViewById(R.id.friends);
         sendMessages = findViewById(R.id.message);
-        captureButton = findViewById(R.id.take_photo);
-        chooseFromAlbum = findViewById(R.id.menu_button);
+        captureButton = findViewById(R.id.camera_screen_btn);
+        chooseFromAlbum = findViewById(R.id.history_screen_btn);
         switchCameraButton = findViewById(R.id.share_button);
         historyButton = findViewById(R.id.history_button);
         chooseFromAlbum.setColorFilter(Color.WHITE);
@@ -115,6 +117,20 @@ public class CameraActivity extends AppCompatActivity {
                 friendsButton.invalidate();
             }));
         });
+
+        // Get posts and put in the history button how many posts we got
+        PostService.getInstance().fetchPostsOnce(this).thenAccept(status -> {
+            Log.d("CameraActivity", "Fetch posts accepted status " + status);
+            if (!status) {
+                runOnUiThread(() -> {Toast.makeText(CameraActivity.this, "Failed to get histories", Toast.LENGTH_SHORT).show();});
+                return;
+            }
+
+            List<Post> cachedPosts = PostCache.getInstance().getPosts();
+            final var size = cachedPosts.size();
+            runOnUiThread(() -> {historyButton.setText(String.format("%d histor%s", size, size == 1 ? "y" : "ies"));});
+        });
+
 
         // Initialize ActivityResultLauncher
         mediaPickerLauncher = registerForActivityResult(

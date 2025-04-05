@@ -4,6 +4,7 @@ import dev.frilly.locket.R;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -26,7 +27,6 @@ public class FriendsPostActivity extends AppCompatActivity {
     private TextView messageTextView;
     private TextView posterTextView;
     private TextView postDateTextView;
-    private Spinner userFilterSpinner;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,9 +37,11 @@ public class FriendsPostActivity extends AppCompatActivity {
         messageTextView = findViewById(R.id.message_confirm_input);
         posterTextView = findViewById(R.id.poster);
         postDateTextView = findViewById(R.id.post_date);
-        userFilterSpinner = findViewById(R.id.user_filter_spinner);
 
-        setupSpinner();
+        ImageButton userAvatar = findViewById(R.id.user_avatar);
+        ImageButton sendMessages = findViewById(R.id.message);
+        ImageButton historyScreenBtn = findViewById(R.id.history_screen_btn);
+        ImageButton cameraScreenBtn = findViewById(R.id.camera_screen_btn);
 
         // Get data from intent
         Intent intent = getIntent();
@@ -62,6 +64,25 @@ public class FriendsPostActivity extends AppCompatActivity {
             posterTextView.setText(username != null ? username : "Unknown");
             postDateTextView.setText(postTime != null ? calculateTimeDifference(postTime) : "Unknown date");
         }
+
+        userAvatar.setOnClickListener(v -> {
+            final var profileIntent = new Intent(FriendsPostActivity.this, ProfileActivity.class);
+            startActivity(profileIntent);
+        });
+
+        sendMessages.setOnClickListener(v -> {
+            final var chatIntent = new Intent(FriendsPostActivity.this, RecentChatsActivity.class);
+            startActivity(chatIntent);
+        });
+
+        historyScreenBtn.setOnClickListener(v -> {
+            getOnBackPressedDispatcher().onBackPressed();
+        });
+
+        cameraScreenBtn.setOnClickListener(v -> {
+            setResult(RESULT_OK); // signal to close HistoryActivity
+            finish(); // close this screen
+        });
     }
 
     private String calculateTimeDifference(String postTime) {
@@ -90,19 +111,6 @@ public class FriendsPostActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return "Unknown";
-    }
-
-    private void setupSpinner() {
-        String[] users = {"Everyone", "nthung", "nthung01", "nthung02"};  // Add your users here
-
-        // Use android.R.layout.simple_spinner_item instead of simple_spinner_dropdown_item
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item, users);
-        adapter.setDropDownViewResource(R.layout.spinner_drop_item);
-
-        userFilterSpinner.setAdapter(adapter);
-
-        // Ensure "Everyone" is selected by default AFTER setting the adapter
-        userFilterSpinner.post(() -> userFilterSpinner.setSelection(0, false));
     }
 }
 

@@ -1,12 +1,12 @@
-package dev.frilly.locket.activities;
+package dev.frilly.locket.model;
 
-public class PostData {
+public class Post {
     private String imageUrl;
     private String username;
     private String message;
     private String postTime;
 
-    public PostData(String imageUrl, String username, String message, String postTime) {
+    public Post(String imageUrl, String username, String message, String postTime) {
         this.imageUrl = imageUrl;
         this.username = username;
         this.message = message;
