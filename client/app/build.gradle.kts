@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.security.crypto)
     implementation(libs.firebase.database)
     implementation(libs.firebase.storage)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.firebase.analytics)
 
     testImplementation(libs.junit)
     implementation(libs.camera.core)

@@ -67,6 +67,9 @@ public class MessengerActivity extends AppCompatActivity {
         userAdapter = new ListUserAdapter(options);
         userAdapter.setHasStableIds(true); // Enable stable IDs to help RecyclerView track items
         recyclerView.setAdapter(userAdapter);
+
+        // Gọi hàm fetchFriendsAndLoadUsers để lọc danh sách bạn bè
+        ListUserAdapter.fetchFriendsAndLoadUsers(userAdapter);
     }
 
     @Override

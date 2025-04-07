@@ -16,13 +16,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
 import dev.frilly.locket.activities.ChatActivity;
 import dev.frilly.locket.model.Chatroom;
 import dev.frilly.locket.model.User;
+import dev.frilly.locket.room.entities.UserProfile;
 import dev.frilly.locket.utils.AndroidUtil;
 import dev.frilly.locket.utils.FirebaseUtil;
 
@@ -60,25 +67,45 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
                             return;
                         }
 
-                        FirebaseUtil.getOtherProfilePicStorageRef(otherUserModel.getUserId()).getDownloadUrl()
-                                .addOnCompleteListener(t -> {
-                                    if (t.isSuccessful() && t.getResult() != null) {
-                                        Uri uri = t.getResult();
-                                        AndroidUtil.setProfilePic(context, uri, holder.profilePic);
-                                    } else {
-                                        Log.e("ChatroomAdapter", "Failed to load profile pic");
-                                    }
-                                });
+                        // 🔥 Kiểm tra xem user này có phải bạn bè không bằng LocalDatabase
+                        Constants.ROOM.userProfileDao().getProfiles().observeForever(profiles -> {
+                            if (profiles == null || profiles.isEmpty()) {
+                                Log.d("ChatroomAdapter", "Không có danh sách bạn bè.");
+                                return;
+                            }
 
-                        holder.usernameText.setText(otherUserModel.getUsername());
-                        holder.lastMessageText.setText(lastMessageSentByMe ? "You: " + model.getLastMessage() : model.getLastMessage());
-                        holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
+                            boolean isFriend = profiles.stream()
+                                    .anyMatch(profile -> profile.friendState == UserProfile.FriendState.FRIEND &&
+                                            String.valueOf(profile.id).equals(otherUserModel.getUserId()));
 
-                        holder.itemView.setOnClickListener(v -> {
-                            Intent intent = new Intent(context, ChatActivity.class);
-                            AndroidUtil.passUserModelAsIntent(intent, otherUserModel);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
+                            if (!isFriend) {
+                                Log.d("ChatroomAdapter", "User không phải bạn bè, ẩn khỏi danh sách.");
+                                getSnapshots().getSnapshot(position).getReference().delete();
+                                notifyItemRemoved(position);
+                                return;
+                            }
+
+                            // 🔥 Nếu là bạn bè, tiếp tục hiển thị
+                            FirebaseUtil.getOtherProfilePicStorageRef(otherUserModel.getUserId()).getDownloadUrl()
+                                    .addOnCompleteListener(t -> {
+                                        if (t.isSuccessful() && t.getResult() != null) {
+                                            Uri uri = t.getResult();
+                                            AndroidUtil.setProfilePic(context, uri, holder.profilePic);
+                                        } else {
+                                            Log.e("ChatroomAdapter", "Failed to load profile pic");
+                                        }
+                                    });
+
+                            holder.usernameText.setText(otherUserModel.getUsername());
+                            holder.lastMessageText.setText(lastMessageSentByMe ? "You: " + model.getLastMessage() : model.getLastMessage());
+                            holder.lastMessageTime.setText(FirebaseUtil.timestampToString(model.getLastMessageTimestamp()));
+
+                            holder.itemView.setOnClickListener(v -> {
+                                Intent intent = new Intent(context, ChatActivity.class);
+                                AndroidUtil.passUserModelAsIntent(intent, otherUserModel);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent);
+                            });
                         });
                     });
                 }
@@ -86,6 +113,21 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
         });
     }
 
+    public static void getFriendsList(String userId, OnSuccessListener<List<String>> onSuccess) {
+        FirebaseFirestore.getInstance()
+                .collection("friends") // Giả sử danh sách bạn bè được lưu trong collection này
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        List<String> friendsList = (List<String>) documentSnapshot.get("friendIds");
+                        onSuccess.onSuccess(friendsList);
+                    } else {
+                        onSuccess.onSuccess(new ArrayList<>()); // Nếu không có bạn bè
+                    }
+                })
+                .addOnFailureListener(e -> onSuccess.onSuccess(new ArrayList<>()));
+    }
 
     @NonNull
     @Override

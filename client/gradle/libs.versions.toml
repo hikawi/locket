@@ -18,6 +18,8 @@ firebaseMessaging = "24.1.1"
 firebaseFirestore = "25.1.2"
 firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.1"
+roomRuntime = "2.6.1"
+firebaseAnalytics = "22.4.0"
 
 [libraries]
 androidx-camera-video = { module = "androidx.camera:camera-video", version.ref = "cameraCore" }
@@ -43,6 +45,8 @@ firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomRuntime" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics", version.ref = "firebaseAnalytics" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

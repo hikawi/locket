@@ -10,10 +10,25 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import dev.frilly.locket.Constants;
+import dev.frilly.locket.R;
+import dev.frilly.locket.activities.ChatActivity;
+import dev.frilly.locket.model.User;
+import dev.frilly.locket.room.LocalDatabase;
+import dev.frilly.locket.room.entities.UserProfile;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import dev.frilly.locket.R;
@@ -24,8 +39,8 @@ import dev.frilly.locket.utils.FirebaseUtil;
 
 public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdapter.UserViewHolder> {
 
+    private static final String TAG = "ListUserAdapter";
     String currentUserId;
-
 
     public ListUserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
@@ -72,13 +87,52 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
         });
     }
 
+    public static void fetchFriendsAndLoadUsers(FirestoreRecyclerAdapter<User, ListUserAdapter.UserViewHolder> adapter) {
+        // Lấy LocalDatabase từ Constants.ROOM
+        LocalDatabase db = Constants.ROOM;
+
+        LiveData<List<UserProfile>> friendsLiveData = db.userProfileDao().getProfiles();
+        friendsLiveData.observeForever(new Observer<List<UserProfile>>() {
+            @Override
+            public void onChanged(List<UserProfile> profiles) {
+                if (profiles == null || profiles.isEmpty()) {
+                    Log.d(TAG, "No friends found.");
+                    return;
+                }
+
+                List<String> friendIds = profiles.stream()
+                        .filter(profile -> profile.friendState == UserProfile.FriendState.FRIEND)
+                        .map(profile -> String.valueOf(profile.id)) // Chuyển id thành String
+                        .collect(Collectors.toList());
+
+                Log.d(TAG, "Friend IDs: " + friendIds);
+                Log.d(TAG, "Raw friend profiles: " + profiles);
+                Log.d(TAG, "Friend IDs extracted: " + friendIds);
+                if (friendIds.isEmpty()) {
+                    Log.d(TAG, "No valid friend IDs.");
+                    return;
+                }
+
+                Query query = FirebaseFirestore.getInstance().collection("users")
+                        .whereIn("userId", friendIds);
+
+                FirestoreRecyclerOptions<User> newOptions = new FirestoreRecyclerOptions.Builder<User>()
+                        .setQuery(query, User.class)
+                        .build();
+
+                adapter.updateOptions(newOptions);
+            }
+        });
+    }
+
+
 
     @Override
     public void onError(@NonNull FirebaseFirestoreException e) {
         super.onError(e);
         e.printStackTrace();
     }
-
+  
     public static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView textUserName, textPhoneNumber;
         ImageView imageProfile;

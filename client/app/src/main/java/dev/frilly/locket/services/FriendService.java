@@ -95,6 +95,7 @@ public final class FriendService {
 
                     if (!friendObj.isNull("birthdate")) {
                         final var bDayString = friendObj.getString("birthdate");
+
                         profile.birthdate = AndroidUtil.dateStringToMillis(bDayString);
                         Log.d("FriendService", "Parsing birthdate " + profile.birthdate);
                     }

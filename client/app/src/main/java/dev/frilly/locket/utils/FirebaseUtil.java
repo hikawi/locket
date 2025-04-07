@@ -2,6 +2,8 @@ package dev.frilly.locket.utils;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
@@ -57,8 +59,21 @@ public class FirebaseUtil {
         return false;
     }
 
-    public static DocumentReference currentUserDetails(){
-        return FirebaseFirestore.getInstance().collection("users").document(currentUserId());
+    public static Task<DocumentReference> currentUserDetails() {
+        TaskCompletionSource<DocumentReference> taskSource = new TaskCompletionSource<>();
+
+        getCurrentUserId(userId -> {
+            if (userId != null) {
+                DocumentReference userRef = FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(userId);
+                taskSource.setResult(userRef);
+            } else {
+                taskSource.setException(new Exception("User ID not found"));
+            }
+        });
+
+        return taskSource.getTask();
     }
 
     public static CollectionReference allUserCollectionReference(){
