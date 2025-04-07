@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -28,12 +29,18 @@ import dev.frilly.locket.activities.ChatActivity;
 import dev.frilly.locket.model.User;
 import dev.frilly.locket.room.LocalDatabase;
 import dev.frilly.locket.room.entities.UserProfile;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
+import dev.frilly.locket.R;
+import dev.frilly.locket.activities.ChatActivity;
+import dev.frilly.locket.model.User;
 import dev.frilly.locket.utils.AndroidUtil;
 import dev.frilly.locket.utils.FirebaseUtil;
 
 public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdapter.UserViewHolder> {
 
     private static final String TAG = "ListUserAdapter";
+    String currentUserId;
 
     public ListUserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
@@ -51,8 +58,18 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
         holder.textUserName.setText(model.getUsername());
         holder.textPhoneNumber.setText(model.getEmail());
 
-        Log.d(TAG, "User: " + model.getUsername() + " - ID: " + model.getUserId());
+        // Ghi log để kiểm tra ID
+        Log.d("ListUserAdapter", "User: " + model.getUsername() + " - ID: " + model.getUserId());
 
+        // Lấy userId thực sự từ Firestore và kiểm tra
+        FirebaseUtil.getCurrentUserId(userId -> {
+            Log.d("ListUserAdapter", "Current User ID: " + userId);
+            if (userId != null && userId.equals(model.getUserId())) {
+                holder.textUserName.setText(model.getUsername() + " (Me)");
+            }
+        });
+
+        // Load ảnh đại diện từ Firebase Storage
         FirebaseUtil.getOtherProfilePicStorageRef(model.getUserId()).getDownloadUrl()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -61,6 +78,7 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
                     }
                 });
 
+        // Xử lý sự kiện click vào user
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), ChatActivity.class);
             AndroidUtil.passUserModelAsIntent(intent, model);
@@ -109,6 +127,12 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
 
 
 
+    @Override
+    public void onError(@NonNull FirebaseFirestoreException e) {
+        super.onError(e);
+        e.printStackTrace();
+    }
+  
     public static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView textUserName, textPhoneNumber;
         ImageView imageProfile;

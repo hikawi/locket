@@ -1,30 +1,54 @@
 package dev.frilly.locket.activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
+import dev.frilly.locket.adapter.ConfirmPostAdapter;
+import dev.frilly.locket.adapter.SendToFriendsAdapter;
+import dev.frilly.locket.room.entities.UserProfile;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -33,15 +57,39 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 public class ConfirmPostActivity extends AppCompatActivity {
     private Context context;
-    private ImageView imageView;
-    private SurfaceView surfaceView;
-    private MediaPlayer mediaPlayer;
-    private ImageButton sendButton;
-    private EditText messageInput;
+    private ConfirmPostAdapter adapter;
+    private LinearLayout dotsLayout;
+    private ImageView[] dots;
     private String fileType;
     private String filePath;
+    private ViewPager2 viewPager;
+    private List<String> images;
+    private String userLocation = "Unknown Location"; // Default
+    private FusedLocationProviderClient fusedLocationClient;
+    private SendToFriendsAdapter sendToFriendsAdapter;
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getUserLocation();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,98 +97,224 @@ public class ConfirmPostActivity extends AppCompatActivity {
         setContentView(R.layout.confirm_post_screen);
         context = getApplicationContext();
 
-        imageView = findViewById(R.id.imageView);
-        surfaceView = findViewById(R.id.surfaceView);
-        sendButton = findViewById(R.id.send_button);
-        messageInput = findViewById(R.id.message_confirm_input);
+        ImageButton sendButton = findViewById(R.id.send_button);
+        ImageButton cancelButton = findViewById(R.id.cancel_button);
+        viewPager = findViewById(R.id.viewPager);
+        dotsLayout = findViewById(R.id.dots_layout);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         Intent intent = getIntent();
         if (intent != null) {
             filePath = intent.getStringExtra("file_path");
-            fileType = intent.getStringExtra("file_type");
-
-            if (filePath != null) {
-                if ("image".equals(fileType)) {
-                    showImage(filePath);
-                } else if ("video".equals(fileType)) {
-                    showVideo(filePath);
-                }
-            }
+            images = Collections.singletonList(filePath);
         }
 
-        sendButton.setOnClickListener(v -> uploadFileToBackend());
-    }
+        adapter = new ConfirmPostAdapter(this, images, userLocation);
+        viewPager.setAdapter(adapter);
 
-    private void showImage(String path) {
-        imageView.setVisibility(View.VISIBLE);
-        surfaceView.setVisibility(View.GONE);
-        imageView.setImageURI(Uri.fromFile(new File(path)));
-    }
-
-    private void showVideo(String path) {
-        imageView.setVisibility(View.GONE);
-        surfaceView.setVisibility(View.VISIBLE);
-
-        mediaPlayer = new MediaPlayer();
-        SurfaceHolder holder = surfaceView.getHolder();
-
-        holder.addCallback(new SurfaceHolder.Callback() {
+        // Show dots indicating screen position
+        addDotsIndicator(); // Add dots dynamically
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                try {
-                    mediaPlayer.setDisplay(holder);
-                    mediaPlayer.setDataSource(path);
-                    mediaPlayer.setOnPreparedListener(mp -> {
-                        mp.start();
-                    });
-                    mediaPlayer.prepareAsync();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                if (mediaPlayer != null) {
-                    mediaPlayer.release();
-                    mediaPlayer = null;
-                }
+            public void onPageSelected(int position) {
+                updateDotsIndicator(position);
             }
         });
+
+        getUserLocation();
+
+        sendButton.setOnClickListener(v -> {
+            runOnUiThread(() -> Toast.makeText(this, "Please wait...", Toast.LENGTH_SHORT).show());
+            uploadFileToBackend();
+        });
+
+        cancelButton.setOnClickListener(v -> {
+            getOnBackPressedDispatcher().onBackPressed();
+        });
+
+        // Show the list of friends to send
+        RecyclerView friendsRecycler = findViewById(R.id.friends_recycler);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        friendsRecycler.setLayoutManager(layoutManager);
+
+        Constants.ROOM.userProfileDao().getProfiles().observe(this, userProfiles -> {
+            List<UserProfile> friends = userProfiles.stream()
+                    .filter(p -> p.friendState == UserProfile.FriendState.FRIEND)
+                    .collect(Collectors.toList());
+
+            sendToFriendsAdapter = new SendToFriendsAdapter(this, friends);
+            friendsRecycler.setAdapter(sendToFriendsAdapter);
+        });
+
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void addDotsIndicator() {
+        int NUMBER_OF_PAGES = 3;
+        int dotsCount = images.size() * NUMBER_OF_PAGES;
+        dots = new ImageView[dotsCount];
+
+        for (int i = 0; i < dotsCount; i++) {
+            dots[i] = new ImageView(this);
+            dots[i].setImageDrawable(getDrawable(R.drawable.dot_inactive)); // Default dark dot
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(20, 0, 20, 0);
+            dotsLayout.addView(dots[i], params);
+        }
+
+        dots[0].setImageDrawable(getDrawable(R.drawable.dot_active)); // Highlight first dot as default
+    }
+
+    // Update active dot (indicating current page position)
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private void updateDotsIndicator(int position) {
+        for (int i = 0; i < dots.length; i++) {
+            dots[i].setImageDrawable(getDrawable(R.drawable.dot_inactive));
+        }
+        dots[position].setImageDrawable(getDrawable(R.drawable.dot_active));
+    }
+
+    private void getUserLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+                // Get address from location
+                getAddressFromLocation(location);
+            } else {
+                Log.d("Location", "Last location is null, requesting new location...");
+
+                // Request new location
+                LocationRequest locationRequest = new LocationRequest.Builder(
+                        Priority.PRIORITY_HIGH_ACCURACY, 5000)
+                        .setMinUpdateIntervalMillis(3000)
+                        .build();
+
+                fusedLocationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult != null && !locationResult.getLocations().isEmpty()) {
+                            Location location = locationResult.getLastLocation();
+                            getAddressFromLocation(location);
+                            fusedLocationClient.removeLocationUpdates(this);
+                        }
+                    }
+                }, Looper.getMainLooper());
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("Location", "Failed to get location: " + e.getMessage());
+            userLocation = "Failed to get location";
+            adapter.updateLocation(userLocation);
+        });
+    }
+
+    private void getAddressFromLocation(Location location) {
+        if (location == null) {
+            userLocation = "Location unavailable";
+            adapter.updateLocation(userLocation);
+            return;
+        }
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+
+                // Get location details
+                String district = address.getSubLocality(); // District
+                String city = address.getLocality(); // City
+                String adminArea = address.getAdminArea(); // Sometimes city appears here
+                String subAdminArea = address.getSubAdminArea(); // Alternative district
+                String country = address.getCountryName(); // Country
+
+                // Ensure district, city, country are not empty
+                if (district == null || district.isEmpty()) {
+                    district = (subAdminArea != null) ? subAdminArea : "? ";
+                }
+                if (city == null || city.isEmpty()) {
+                    city = (adminArea != null) ? adminArea : "?";
+                }
+                if (country == null || country.isEmpty()) {
+                    country = "?";
+                }
+
+                userLocation = district + ", " + city + ", " + country;
+                Log.d("Location", "Retrieved location: " + userLocation);
+            } else {
+                userLocation = "Address not found";
+                Log.d("Location", "Geocoder returned empty address list.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            userLocation = "Geocoder error";
+            Log.e("Location", "Geocoder failed: " + e.getMessage());
+        }
+
+        adapter.updateLocation(userLocation);
     }
 
     private void uploadFileToBackend() {
         if (filePath == null || filePath.isEmpty()) {
-            Toast.makeText(this, "File path is empty!", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder filePathEmptyBuilder = new AlertDialog.Builder(this);
+            filePathEmptyBuilder.setTitle("Error Posting")
+                    .setMessage("File path is empty! Please try again later")
+                    .setNegativeButton("OK", null)
+                    .show();
             return;
         }
 
         try {
             File file = new File(filePath);
             if (!file.exists()) {
-                Toast.makeText(this, "File does not exist!", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder noExistFileBuilder = new AlertDialog.Builder(this);
+                noExistFileBuilder.setTitle("Error Posting")
+                        .setMessage("File does not exist! Please try again later")
+                        .setNegativeButton("OK", null)
+                        .show();
                 return;
             }
 
             // Detect MIME type dynamically
             String mimeType = getMimeType(filePath);
             if (mimeType == null || !mimeType.startsWith("image/")) {
-                Toast.makeText(this, "Invalid image file!", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder invalidImageBuilder = new AlertDialog.Builder(this);
+                invalidImageBuilder.setTitle("Error Posting")
+                        .setMessage("Invalid image file! Please try again later")
+                        .setNegativeButton("OK", null)
+                        .show();
                 return;
             }
 
             Log.d("File Upload", "Uploading file: " + filePath);
             Log.d("File Debug", "Detected MIME Type: " + mimeType);
 
+            // Get message text or time or location
+            int currentItem = viewPager.getCurrentItem();
+            int pageType = currentItem % 3; // 0 = Message, 1 = Time, 2 = Location
+            String dataToSend = adapter.getMessageItem(pageType);
+
+            // Get list of friends' id to see the post
+            List<Long> selectedIds = sendToFriendsAdapter.getSelectedFriendIds();
+            String viewers = selectedIds.stream()
+                    .map(String::valueOf)
+                    .collect(Collectors.joining(","));
+
             // Build request body
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("image", file.getName(), RequestBody.create(file, MediaType.parse(mimeType)))
-                    .addFormDataPart("viewers", "")  // Add appropriate values if needed
-                    .addFormDataPart("message", messageInput.getText().toString()) // Add user message
+                    .addFormDataPart("message", dataToSend) // Add user message
+                    .addFormDataPart("viewers", viewers)  // Add appropriate values if needed
                     .build();
 
             // Create request
@@ -155,7 +329,11 @@ public class ConfirmPostActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Failed to upload file!", Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder unknownPostErrorBuilder = new AlertDialog.Builder(this);
+            unknownPostErrorBuilder.setTitle("Unknown Error Posting")
+                    .setMessage("Fail to upload post! Please try again later")
+                    .setNegativeButton("OK", null)
+                    .show();
         }
     }
 
@@ -164,9 +342,9 @@ public class ConfirmPostActivity extends AppCompatActivity {
         String mimeType = getContentResolver().getType(fileUri);
 
         if (mimeType == null) {
-            // If Android cannot determine MIME type, use extension-based lookup
-            String extension = filePath.substring(filePath.lastIndexOf(".") + 1);
-            switch (extension.toLowerCase()) {
+            // Check file extension
+            String extension = filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase();
+            switch (extension) {
                 case "jpg":
                 case "jpeg":
                     return "image/jpeg";
@@ -195,29 +373,59 @@ public class ConfirmPostActivity extends AppCompatActivity {
         private void handle(int code) throws Exception {
             switch (code) {
                 case 413:
-                    runOnUiThread(() -> {
-                        Toast.makeText(context, "Image is too big. Please try again", Toast.LENGTH_SHORT).show();
-                    });
+                    AlertDialog.Builder builder413 = new AlertDialog.Builder(ConfirmPostActivity.this);
+                    builder413.setTitle("Error Code 413")
+                            .setMessage("Image is too big. Please try other image")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    getOnBackPressedDispatcher().onBackPressed();
+                                }
+                            })
+                            .show();
                     break;
                 case 401:
-                    runOnUiThread(() -> {
-                        Toast.makeText(context, "Authentication failed! Please log in again", Toast.LENGTH_SHORT).show();
-                    });
+                    AlertDialog.Builder builder401 = new AlertDialog.Builder(ConfirmPostActivity.this);
+                    builder401.setTitle("Error Code 401")
+                            .setMessage("Authentication failed! Please log in again")
+                            .setNegativeButton("OK", null)
+                            .show();
                     break;
                 case 400:
-                    runOnUiThread(() -> {
-                        Toast.makeText(context, "Invalid image. Please try again", Toast.LENGTH_SHORT).show();
-                    });
+                    AlertDialog.Builder builder400 = new AlertDialog.Builder(ConfirmPostActivity.this);
+                    builder400.setTitle("Error Code 400")
+                            .setMessage("Invalid image. Please try other image")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    getOnBackPressedDispatcher().onBackPressed();
+                                }
+                            })
+                            .show();
                     break;
-                case 201:
-                    runOnUiThread(() -> {
-                        Toast.makeText(context, "Image uploaded successfully!", Toast.LENGTH_SHORT).show();
-                    });
+                case 200:
+                    AlertDialog.Builder builder200 = new AlertDialog.Builder(ConfirmPostActivity.this);
+                    builder200.setTitle("Complete")
+                            .setMessage("Image uploaded successfully!")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    getOnBackPressedDispatcher().onBackPressed();
+                                }
+                            })
+                            .show();
                     break;
                 default:
-                    runOnUiThread(() -> {
-                        Toast.makeText(context, "Unknown error code", Toast.LENGTH_SHORT).show();
-                    });
+                    AlertDialog.Builder builderUnknown = new AlertDialog.Builder(ConfirmPostActivity.this);
+                    builderUnknown.setTitle("Unknown Error")
+                            .setMessage("Unknown error code. Please try again later")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    getOnBackPressedDispatcher().onBackPressed();
+                                }
+                            })
+                            .show();
                     break;
             }
         }
@@ -226,7 +434,6 @@ public class ConfirmPostActivity extends AppCompatActivity {
         public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
             runOnUiThread(() -> {
                 try {
-                    Log.d("Code: ", "" + response.code());
                     handle(response.code());
                 } catch (Exception e) {
                     e.printStackTrace();

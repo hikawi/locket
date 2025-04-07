@@ -77,7 +77,8 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     public void onBindViewHolder(@NonNull Holder holder, int position) {
         final var profile = dataSource.get(position);
 
-        Glide.with(context).load(profile.avatarUrl).circleCrop().into(holder.imageView);
+        if (profile.avatarUrl != null)
+            Glide.with(context).load(profile.avatarUrl).circleCrop().into(holder.imageView);
         holder.usernameView.setText(profile.username);
 
         holder.descriptionView.setVisibility(View.VISIBLE);

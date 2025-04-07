@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "dev.frilly"
-version = "0.6.2-SNAPSHOT"
+version = "0.6.3-SNAPSHOT"
 
 java {
     toolchain {

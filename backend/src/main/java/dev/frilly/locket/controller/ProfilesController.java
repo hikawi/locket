@@ -1,5 +1,6 @@
 package dev.frilly.locket.controller;
 
+import com.cloudinary.Cloudinary;
 import dev.frilly.locket.data.User;
 import dev.frilly.locket.dto.req.ProfileRequest;
 import dev.frilly.locket.dto.res.UserResponse;
@@ -7,10 +8,16 @@ import dev.frilly.locket.repo.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for fetching profiles.
@@ -23,6 +30,9 @@ public final class ProfilesController {
 
   @Autowired
   private BCryptPasswordEncoder encoder;
+
+  @Autowired
+  private Cloudinary cloudinary;
 
   /**
    * Handles GET /profiles. This route is unauthenticated.
@@ -44,6 +54,36 @@ public final class ProfilesController {
       }
 
       return target.get().makeResponse();
+    }
+  }
+
+  /**
+   * Controller for PUTTING a new avatar.
+   */
+  @PostMapping(
+      value = "/profiles/avatar",
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}
+  )
+  public UserResponse putProfileAvatar(@RequestPart final MultipartFile image) {
+    final var auth = SecurityContextHolder.getContext().getAuthentication();
+    final var user = (User) auth.getPrincipal();
+
+    if (image.getSize() > 10 * 1024 * 1024) {
+      throw new ResponseStatusException(HttpStatus.REQUEST_ENTITY_TOO_LARGE);
+    }
+
+    final var allowed = List.of("image/webp", "image/jpeg", "image/png");
+    if (!allowed.contains(image.getContentType())) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      final var res = cloudinary.uploader().upload(image.getBytes(), Map.of());
+      user.setAvatarUrl((String) res.get("secure_url"));
+      return userRepo.save(user).makeResponse();
+    } catch (IOException ex) {
+      ex.printStackTrace();
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
