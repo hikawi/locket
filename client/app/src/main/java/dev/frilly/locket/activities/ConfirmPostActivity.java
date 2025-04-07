@@ -2,6 +2,8 @@ package dev.frilly.locket.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,7 +37,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -99,6 +104,8 @@ public class ConfirmPostActivity extends AppCompatActivity {
 
         ImageButton sendButton = findViewById(R.id.send_button);
         ImageButton cancelButton = findViewById(R.id.cancel_button);
+        ImageButton downloadButton = findViewById(R.id.download_button);
+
         viewPager = findViewById(R.id.viewPager);
         dotsLayout = findViewById(R.id.dots_layout);
 
@@ -107,6 +114,7 @@ public class ConfirmPostActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             filePath = intent.getStringExtra("file_path");
+            fileType = intent.getStringExtra("file_type");
             images = Collections.singletonList(filePath);
         }
 
@@ -132,6 +140,8 @@ public class ConfirmPostActivity extends AppCompatActivity {
         cancelButton.setOnClickListener(v -> {
             getOnBackPressedDispatcher().onBackPressed();
         });
+
+        downloadButton.setOnClickListener(v -> saveToGallery());
 
         // Show the list of friends to send
         RecyclerView friendsRecycler = findViewById(R.id.friends_recycler);
@@ -439,6 +449,57 @@ public class ConfirmPostActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             });
+        }
+    }
+
+    private void saveToGallery() {
+        if (filePath == null || filePath.isEmpty()) {
+            Toast.makeText(this, "Không tìm thấy tệp!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File file = new File(filePath);
+        if (!file.exists()) {
+            Toast.makeText(this, "Tệp không tồn tại!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ContentResolver resolver = getContentResolver();
+        ContentValues values = new ContentValues();
+
+        Uri collection;
+        if ("image".equals(fileType)) {
+            collection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
+            values.put(MediaStore.Images.Media.MIME_TYPE, getMimeType(filePath));
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/MyApp");
+        } else if ("video".equals(fileType)) {
+            collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+            values.put(MediaStore.Video.Media.DISPLAY_NAME, file.getName());
+            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
+            values.put(MediaStore.Video.Media.RELATIVE_PATH, "Movies/MyApp");
+        } else {
+            Toast.makeText(this, "Định dạng không được hỗ trợ!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Uri uri = resolver.insert(collection, values);
+        if (uri == null) {
+            Toast.makeText(this, "Không thể lưu tệp!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try (OutputStream outputStream = resolver.openOutputStream(uri);
+             InputStream inputStream = new FileInputStream(file)) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            Toast.makeText(this, "Đã lưu vào bộ sưu tập!", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lưu thất bại!", Toast.LENGTH_SHORT).show();
         }
     }
 }

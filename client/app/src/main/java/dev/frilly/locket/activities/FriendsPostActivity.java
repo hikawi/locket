@@ -42,6 +42,7 @@ public class FriendsPostActivity extends AppCompatActivity {
         ImageButton sendMessages = findViewById(R.id.message);
         ImageButton historyScreenBtn = findViewById(R.id.history_screen_btn);
         ImageButton cameraScreenBtn = findViewById(R.id.camera_screen_btn);
+        ImageButton shareBtn = findViewById(R.id.share_button);
 
         // Get data from intent
         Intent intent = getIntent();
@@ -82,6 +83,12 @@ public class FriendsPostActivity extends AppCompatActivity {
         cameraScreenBtn.setOnClickListener(v -> {
             setResult(RESULT_OK); // signal to close HistoryActivity
             finish(); // close this screen
+        });
+
+        shareBtn.setOnClickListener(v -> {
+            String imageUrl = intent.getStringExtra("imageUrl");
+            ShareBottomSheetDialog dialog = new ShareBottomSheetDialog(imageUrl);
+            dialog.show(getSupportFragmentManager(), "ShareDialog");
         });
     }
 

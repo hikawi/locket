@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Other styles -->
+
+    <!-- BottomSheetDialog theme -->
+    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <!-- Optionally, you can define more custom styles for your bottom sheet -->
+    <style name="BottomSheetDialog">
+        <item name="android:background">@android:color/white</item>
+    </style>
+</resources>
