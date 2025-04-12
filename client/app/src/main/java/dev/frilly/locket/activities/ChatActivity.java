@@ -79,7 +79,6 @@ public class ChatActivity extends AppCompatActivity {
 
         otherUserName.setText(otherUser.getUsername());
 
-        Log.d("ChatActivity", "Current User ID: " + currentUserId);
         Log.d("ChatActivity", "Other User ID: " + otherUser.getUserId());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
         // If not, get to the screen to either login/register.
         if (Authentication.isAuthenticated(this)) {
             Log.d("AuthCheck", "User is authenticated");
-            getFCMToken();
             final var intent = new Intent(this, CameraActivity.class);
             startActivity(intent);
         } else {
