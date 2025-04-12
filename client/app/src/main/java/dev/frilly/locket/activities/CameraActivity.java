@@ -111,6 +111,7 @@ public class CameraActivity extends AppCompatActivity {
             runOnUiThread(() -> friends.observe(this, liveData -> {
                 final var count = liveData.stream().filter(d -> d.friendState == UserProfile.FriendState.FRIEND)
                         .count();
+                Log.d("CameraActivity", "Friends number : " + count);
                 friendsButton.setText(String.format("%d friend%s", count, count == 1 ? "" : "s"));
                 friendsButton.invalidate();
             }));
