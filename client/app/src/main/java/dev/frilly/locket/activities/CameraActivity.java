@@ -130,7 +130,7 @@ public class CameraActivity extends AppCompatActivity {
         });
 
         // Get posts and put in the history button how many posts we got
-        PostService.getInstance().fetchPostsOnce(this).thenAccept(status -> {
+        PostService.getInstance().fetchPosts(this).thenAccept(status -> {
             Log.d("CameraActivity", "Fetch posts accepted status " + status);
             if (!status) {
                 runOnUiThread(() -> {Toast.makeText(CameraActivity.this, "Failed to get histories", Toast.LENGTH_SHORT).show();});
@@ -218,6 +218,18 @@ public class CameraActivity extends AppCompatActivity {
 
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Fetch posts again if user returns back to this screen
+        PostService.getInstance().fetchPosts(this).thenAccept(status -> {
+            if (!status) return;
+            List<Post> cachedPosts = PostCache.getInstance().getPosts();
+            runOnUiThread(() -> historyButton.setText(String.format("%d histor%s", cachedPosts.size(), cachedPosts.size() == 1 ? "y" : "ies")));
+        });
+    }
+
 
     private void pickMediaFiles() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);

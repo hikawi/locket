@@ -40,14 +40,8 @@ public final class PostService {
 
     public static PostService getInstance() { return instance; }
 
-    public CompletableFuture<Boolean> fetchPostsOnce(final Context ctx) {
+    public CompletableFuture<Boolean> fetchPosts(final Context ctx) {
         final CompletableFuture<Boolean> future = new CompletableFuture<>();
-
-        // If already cached, no need to fetch again
-        if (!PostCache.getInstance().getPosts().isEmpty()) {
-            future.complete(true);
-            return future;
-        }
 
         String fromDate = LocalDateTime.now().minusDays(7).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         String toDate = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
