@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -26,6 +27,7 @@ import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
+import androidx.camera.core.TorchState;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.video.FileOutputOptions;
 import androidx.camera.video.Quality;
@@ -63,6 +65,9 @@ public class CameraActivity extends AppCompatActivity {
     private Context context;
     private boolean isFrontCamera = false;
     private boolean isRecording = false;
+    private boolean doubleBackBtnPressed = false;
+    private Runnable resetBackBtn = () -> doubleBackBtnPressed = false;
+    private Handler handler = new Handler();
     private long pressStartTime;
     private ImageButton userAvatar;
     private Button friendsButton;
@@ -198,7 +203,17 @@ public class CameraActivity extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finishAffinity();
+                if (doubleBackBtnPressed) {
+                    Intent homeScreenIntent = new Intent(Intent.ACTION_MAIN);
+                    homeScreenIntent.addCategory(Intent.CATEGORY_HOME);
+                    homeScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(homeScreenIntent);
+                }
+                else {
+                    doubleBackBtnPressed = true;
+                    Toast.makeText(CameraActivity.this, "Press one more time to exit", Toast.LENGTH_SHORT).show();
+                    handler.postDelayed(resetBackBtn, 2000); // If second press is within 2 seconds, exit app
+                }
             }
         };
 

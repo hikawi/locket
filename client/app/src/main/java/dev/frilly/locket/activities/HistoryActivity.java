@@ -51,6 +51,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         ImageButton userAvatar = findViewById(R.id.main_user_avatar);
         ImageButton sendMessage = findViewById(R.id.message);
+        ImageButton returnButton = findViewById(R.id.return_button);
 
         friendsPostLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -101,6 +102,10 @@ public class HistoryActivity extends AppCompatActivity {
         sendMessage.setOnClickListener(v -> {
             final var chatIntent = new Intent(HistoryActivity.this, RecentChatsActivity.class);
             startActivity(chatIntent);
+        });
+
+        returnButton.setOnClickListener(v -> {
+            getOnBackPressedDispatcher().onBackPressed();
         });
     }
 
