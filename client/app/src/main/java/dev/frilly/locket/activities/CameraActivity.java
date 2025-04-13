@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -63,6 +64,9 @@ public class CameraActivity extends AppCompatActivity {
     private Context context;
     private boolean isFrontCamera = false;
     private boolean isRecording = false;
+    private boolean doubleBackBtnPressed = false;
+    private Runnable resetBackBtn = () -> doubleBackBtnPressed = false;
+    private Handler handler = new Handler();
     private long pressStartTime;
     private ImageButton userAvatar;
     private Button friendsButton;
@@ -126,7 +130,7 @@ public class CameraActivity extends AppCompatActivity {
         });
 
         // Get posts and put in the history button how many posts we got
-        PostService.getInstance().fetchPostsOnce(this).thenAccept(status -> {
+        PostService.getInstance().fetchPosts(this).thenAccept(status -> {
             Log.d("CameraActivity", "Fetch posts accepted status " + status);
             if (!status) {
                 runOnUiThread(() -> {Toast.makeText(CameraActivity.this, "Failed to get histories", Toast.LENGTH_SHORT).show();});
@@ -198,12 +202,34 @@ public class CameraActivity extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                finishAffinity();
+                if (doubleBackBtnPressed) {
+                    Intent homeScreenIntent = new Intent(Intent.ACTION_MAIN);
+                    homeScreenIntent.addCategory(Intent.CATEGORY_HOME);
+                    homeScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(homeScreenIntent);
+                }
+                else {
+                    doubleBackBtnPressed = true;
+                    Toast.makeText(CameraActivity.this, "Press one more time to exit", Toast.LENGTH_SHORT).show();
+                    handler.postDelayed(resetBackBtn, 2000); // If second press is within 2 seconds, exit app
+                }
             }
         };
 
         getOnBackPressedDispatcher().addCallback(this, callback);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Fetch posts again if user returns back to this screen
+        PostService.getInstance().fetchPosts(this).thenAccept(status -> {
+            if (!status) return;
+            List<Post> cachedPosts = PostCache.getInstance().getPosts();
+            runOnUiThread(() -> historyButton.setText(String.format("%d histor%s", cachedPosts.size(), cachedPosts.size() == 1 ? "y" : "ies")));
+        });
+    }
+
 
     private void pickMediaFiles() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
