@@ -4,10 +4,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKey;
 
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * A utility class for managing authentication tokens and user data securely.
@@ -105,9 +114,56 @@ public class Authentication {
      * @param ctx the application context
      * @return true if authenticated, false otherwise
      */
+    @Deprecated
     public static boolean isAuthenticated(final Context ctx) {
         String token = getToken(ctx);
         return token != null && !token.isBlank();
+    }
+
+    /**
+     * Sends a request to see if the user is properly authenticated.
+     *
+     * @param ctx the application context
+     * @return a future that completes with true if authenticated, or false if not.
+     */
+    public static CompletableFuture<Boolean> checkAuthenticationStatus(final Context ctx) {
+        final var token = getToken(ctx);
+        if (token == null || token.isBlank()) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        final var future = new CompletableFuture<Boolean>();
+        final var req = new Request.Builder()
+                .url(Constants.BACKEND_URL + "profiles")
+                .header("Authorization", "Bearer " + token)
+                .build();
+
+        Constants.HTTP_CLIENT.newCall(req).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                e.printStackTrace();
+                future.complete(false);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                if (response.code() != 200) {
+                    future.complete(false);
+                    return;
+                }
+
+                final var body = response.body().string();
+                try {
+                    Authentication.saveUserData(ctx, new JSONObject(body));
+                    future.complete(true);
+                } catch (Exception e) {
+                    future.complete(false);
+                    e.printStackTrace();
+                    Log.e("Authentication", "Failed authentication check.");
+                }
+            }
+        });
+        return future;
     }
 
     /**

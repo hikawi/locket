@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.ImageView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +17,7 @@ import com.google.firebase.firestore.Query;
 import dev.frilly.locket.R;
 import dev.frilly.locket.adapter.ListUserAdapter;
 import dev.frilly.locket.model.User;
+import dev.frilly.locket.utils.AndroidUtil;
 
 public class MessengerActivity extends AppCompatActivity {
     private static final String TAG = "MessengerActivity";
@@ -28,6 +28,7 @@ public class MessengerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.list_mess_user);
+        AndroidUtil.applyInsets(this, R.id.layout_outer);
 
         recyclerView = findViewById(R.id.mess_user_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
