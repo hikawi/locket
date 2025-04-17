@@ -104,7 +104,7 @@ Security is done via a header `Authorization` with `Bearer <token>`. There are r
 - GET `/`
 - GET `/profiles`
 
-Trying to access a route that does not exist always returns `403 FORBIDDEN`. 
+Trying to access a route that does not exist always returns `403 FORBIDDEN`.
 Trying to access an authenticated route without a valid token always returns `401 UNAUTHORIZED`.
 
 #### Routing Data
@@ -189,8 +189,8 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
 - Accepts query parameters:
   - page (number, default 0)
   - per_page (number, default 20)
-  - myself (boolean, default false): Whether to show requests that you sent. 
-    If true, show requests that you sent others. If false, show requests 
+  - myself (boolean, default false): Whether to show requests that you sent.
+    If true, show requests that you sent others. If false, show requests
     that you received.
 - Returns:
   - 200 with { results: { id: long, username: string, avatar: string? }[] }
@@ -246,14 +246,15 @@ If a route accepts `date`, please provide `yyyy-MM-dd`. If a route accepts `date
   - until (date, default now)
 - Returns:
   - 200 with { results: { id: long, poster: { username: string, avatar: string? }, image: string, message: string?, time: date } }
+  - You have to discern yourself whether the post is an image or a video, by checking content-type header of the HTTP response.
 
 #### POST `/posts`
 
-- Post an image.
+- Post an image or a video.
 - Accepts body (multipart/form-data):
-  - image (file): The image file itself, accepts 10MB max, allows PNG, JPG, WEBP.
+  - image (file): The image file itself, accepts 10MB max, allows `image/png`, `image/jpeg`, `image/webp`, `video/mp4`, `video/quicktime`, `video/aac`, `video/webm`.
   - message (string?): Optional, the message of the post
-  - viewers (string): A comma-separated list of users to share with. Eg: 1,2,3. Empty means private.
+  - viewers (string?): A comma-separated list of users to share with. Eg: 1,2,3. Empty means private.
 - Returns:
   - 400 if the file is not a valid image
   - 413 if the file is too big
