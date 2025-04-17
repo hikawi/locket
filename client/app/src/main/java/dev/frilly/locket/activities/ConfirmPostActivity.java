@@ -70,7 +70,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class ConfirmPostActivity extends AppCompatActivity {
+public class ConfirmPostActivity extends BaseActivity {
     private Context context;
     private ConfirmPostAdapter adapter;
     private LinearLayout dotsLayout;

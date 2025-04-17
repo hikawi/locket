@@ -1,7 +1,24 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Locket" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Dark theme customization -->
+
+        <!-- Màu thanh trạng thái cho nền tối -->
+        <item name="android:statusBarColor">@color/dark_status_bar_color</item> <!-- Màu nền thanh trạng thái cho chế độ tối -->
+
+        <!-- Chế độ sáng cho thanh trạng thái (tức là chữ sáng trên nền tối) -->
+        <item name="android:windowLightStatusBar">false</item> <!-- Đảm bảo chữ trên thanh trạng thái tối -->
+
+        <!-- Màu primary cho nền tối -->
+        <item name="colorPrimary">@color/dark_primary</item>
+
+        <!-- Màu chính cho nền tối -->
+        <item name="colorPrimaryVariant">@color/dark_primary_variant</item>
+
+        <!-- Màu nền cho ứng dụng tối -->
+        <item name="android:windowBackground">@color/dark_window_background</item>
+
+        <!-- Màu văn bản trên nền tối -->
+        <item name="android:textColor">@color/dark_text_color</item>
     </style>
 </resources>

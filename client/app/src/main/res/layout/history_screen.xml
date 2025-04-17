@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="?android:attr/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginVertical="10dp"
-                android:background="@drawable/rounded_corner_spinner"
+                android:background="@color/black"
                 android:dropDownWidth="wrap_content"
                 android:spinnerMode="dropdown" />
 
@@ -44,7 +44,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="30dp"
-                android:background="@drawable/rounded_corner_full"
+                android:background="@color/transparent"
                 android:contentDescription="@string/chat_with_friends"
                 android:padding="5dp"
                 android:scaleType="centerInside"
@@ -71,7 +71,7 @@
             android:layout_height="60dp"
             android:layout_gravity="bottom|center_horizontal"
             android:layout_marginBottom="40dp"
-            android:backgroundTint="#000000"
+            android:backgroundTint="?android:attr/windowBackground"
             android:scaleType="centerInside"
             android:src="@drawable/circle" />
 

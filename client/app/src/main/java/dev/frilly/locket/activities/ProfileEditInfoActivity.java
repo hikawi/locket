@@ -45,7 +45,7 @@ import okhttp3.Response;
  * The activity that is started when the "Edit Info" button is clicked on
  * the profile screen.
  */
-public class ProfileEditInfoActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class ProfileEditInfoActivity extends BaseActivity implements DatePickerDialog.OnDateSetListener {
 
     private static final Pattern DATE_PATTERN = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
     private final Calendar calendar = Calendar.getInstance();

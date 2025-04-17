@@ -33,7 +33,7 @@ import dev.frilly.locket.model.User;
 import dev.frilly.locket.utils.AndroidUtil;
 import dev.frilly.locket.utils.FirebaseUtil;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
 
     EditText messageInput;
     ImageButton sendMessageBtn;

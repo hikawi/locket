@@ -1,9 +1,25 @@
 <resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.Locket" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="android:statusBarColor">@color/dark_slate</item> <!-- Dark background -->
-        <item name="android:windowLightStatusBar">false</item> <!-- Ensures white text -->
+        <!-- Light theme customization -->
+
+        <!-- Màu thanh trạng thái cho nền sáng -->
+        <item name="android:statusBarColor">@color/light_status_bar_color</item> <!-- Màu nền thanh trạng thái -->
+
+        <!-- Chế độ sáng cho thanh trạng thái (tức là chữ tối trên nền sáng) -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Đảm bảo chữ trên thanh trạng thái sáng -->
+
+        <!-- Màu primary cho nền sáng -->
+        <item name="colorPrimary">@color/light_primary</item>
+
+        <!-- Màu chính cho nền sáng -->
+        <item name="colorPrimaryVariant">@color/light_primary_variant</item>
+
+        <!-- Màu nền cho ứng dụng sáng -->
+        <item name="android:windowBackground">@color/light_window_background</item>
+
+        <!-- Màu văn bản trên nền sáng -->
+        <item name="android:textColor">@color/light_text_color</item>
     </style>
 
     <style name="circle_corners">

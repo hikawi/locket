@@ -30,7 +30,7 @@ import dev.frilly.locket.model.Post;
 import dev.frilly.locket.model.PostCache;
 import dev.frilly.locket.room.entities.UserProfile;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends BaseActivity {
     private RecyclerView imageRecyclerView;
     private MediaAdapter mediaAdapter;
     private ArrayList<Post> postList = new ArrayList<>();

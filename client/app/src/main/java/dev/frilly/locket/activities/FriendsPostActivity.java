@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class FriendsPostActivity extends AppCompatActivity {
+public class FriendsPostActivity extends BaseActivity {
 
     private ImageView imageView;
     private TextView messageTextView;

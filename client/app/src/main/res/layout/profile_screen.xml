@@ -4,7 +4,7 @@
     android:id="@+id/layout_outer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_slate"
+    android:background="?android:attr/windowBackground"
     android:padding="12dp">
 
     <ImageButton
@@ -15,8 +15,8 @@
         android:contentDescription="@string/text_back"
         android:src="@drawable/ic_arrow_back"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/white" />
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_wrapper"
@@ -94,13 +94,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/slate"
+                android:backgroundTint="@color/transparent"
                 android:fontFamily="@font/inter"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="4dp"
                 android:text="@string/text_edit_info"
+                android:textColor="?android:attr/textColor"
                 android:textFontWeight="600"
                 app:cornerRadius="8dp"
+                app:strokeColor="@android:color/black"
+                app:strokeWidth="1dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -115,7 +118,7 @@
             android:layout_marginHorizontal="32dp"
             android:layout_marginTop="32dp"
             android:background="@drawable/rounded_corner"
-            android:backgroundTint="@color/slate"
+            android:backgroundTint="@color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -127,19 +130,22 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/transparent"
                 android:drawableEnd="@drawable/ic_arrow_right"
-                android:drawableTint="@color/white"
+                android:drawableTint="?android:attr/textColor"
+                android:textColor="?android:attr/textColor"
                 android:fontFamily="@font/inter"
                 android:gravity="start"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp"
                 android:text="@string/text_change_email"
+                app:strokeColor="?android:attr/textColor"
+                app:strokeWidth="1dp"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:id="@+id/view_separator1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/dark_slate"
+                android:background="@color/transparent"
                 app:layout_constraintTop_toBottomOf="@id/button_change_email" />
 
             <com.google.android.material.button.MaterialButton
@@ -148,7 +154,9 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/transparent"
                 android:drawableEnd="@drawable/ic_arrow_right"
-                android:drawableTint="@color/white"
+                android:textColor="?android:attr/textColor"
+                app:strokeColor="?android:attr/textColor"
+                app:strokeWidth="1dp"
                 android:fontFamily="@font/inter"
                 android:gravity="start"
                 android:paddingHorizontal="16dp"
@@ -160,7 +168,7 @@
                 android:id="@+id/view_separator2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/dark_slate"
+                android:background="@color/transparent"
                 app:layout_constraintTop_toBottomOf="@id/button_add_widget" />
 
             <com.google.android.material.button.MaterialButton
@@ -169,7 +177,9 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/transparent"
                 android:drawableEnd="@drawable/ic_arrow_right"
-                android:drawableTint="@color/white"
+                android:textColor="?android:attr/textColor"
+                app:strokeColor="?android:attr/textColor"
+                app:strokeWidth="1dp"
                 android:fontFamily="@font/inter"
                 android:gravity="start"
                 android:paddingHorizontal="16dp"
@@ -181,7 +191,7 @@
                 android:id="@+id/view_separator3"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/dark_slate"
+                android:background="@color/transparent"
                 app:layout_constraintTop_toBottomOf="@id/button_logout" />
 
             <com.google.android.material.button.MaterialButton
@@ -190,7 +200,8 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/transparent"
                 android:drawableEnd="@drawable/ic_arrow_right"
-                android:drawableTint="@color/white"
+                app:strokeColor="?android:attr/textColor"
+                app:strokeWidth="1dp"
                 android:fontFamily="@font/inter"
                 android:gravity="start"
                 android:paddingHorizontal="16dp"
@@ -198,6 +209,31 @@
                 android:text="@string/text_delete_account"
                 android:textColor="@color/tomato"
                 app:layout_constraintTop_toBottomOf="@id/view_separator3" />
+
+
+            <View
+                android:id="@+id/view_separator4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/transparent"
+                app:layout_constraintTop_toBottomOf="@id/button_delete_account" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_toggle_theme"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/transparent"
+                android:drawableEnd="@drawable/ic_arrow_right"
+                android:textColor="?android:attr/textColor"
+                app:strokeColor="?android:attr/textColor"
+                app:strokeWidth="1dp"
+                android:fontFamily="@font/inter"
+                android:gravity="start"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                android:text="Change theme (Dark/Light)"
+                app:layout_constraintTop_toBottomOf="@id/view_separator4" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

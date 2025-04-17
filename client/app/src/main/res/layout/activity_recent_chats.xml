@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/slate">
+    android:background="?android:attr/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +20,7 @@
             android:layout_height="32dp"
             android:src="@drawable/ic_arrow_back"
             android:padding="8dp"
-            android:background="@color/slate"
-            android:tint="@android:color/white"/>
+            android:background="?android:attr/windowBackground" />
 
         <TextView
             android:layout_width="0dp"
@@ -31,7 +30,7 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:textColor="@color/white"
+            android:textColor="?android:attr/textColor"
             android:paddingStart="-16dp"/>
     </LinearLayout>
 
@@ -50,6 +49,6 @@
         android:textSize="18sp"
         android:layout_marginTop="12dp"
         android:backgroundTint="@color/white"
-        android:textColor="@color/slate"/>
+        android:textColor="?android:attr/textColor"/>
 
 </LinearLayout>

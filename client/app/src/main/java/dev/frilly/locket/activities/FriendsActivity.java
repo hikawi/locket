@@ -40,7 +40,7 @@ import okhttp3.Response;
  * The activity responsible for handling sending friend requests and displaying
  * friends, sent requests and accept requests
  */
-public class FriendsActivity extends AppCompatActivity {
+public class FriendsActivity extends BaseActivity {
 
     private List<UserProfile> cacheProfiles = new ArrayList<>();
     private ImageButton backButton;

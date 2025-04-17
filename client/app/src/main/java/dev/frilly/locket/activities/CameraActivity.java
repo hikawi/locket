@@ -59,7 +59,7 @@ import dev.frilly.locket.utils.AndroidUtil;
  * Make a post with image
  */
 
-public class CameraActivity extends AppCompatActivity {
+public class CameraActivity extends BaseActivity {
     private static final int LONG_PRESS_DURATION = 500;
     private Context context;
     private boolean isFrontCamera = false;
@@ -97,7 +97,7 @@ public class CameraActivity extends AppCompatActivity {
         chooseFromAlbum = findViewById(R.id.history_screen_btn);
         switchCameraButton = findViewById(R.id.share_button);
         historyButton = findViewById(R.id.history_button);
-        chooseFromAlbum.setColorFilter(Color.WHITE);
+
 
         previewView = findViewById(R.id.previewView);
         cameraExecutor = Executors.newSingleThreadExecutor();

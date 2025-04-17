@@ -12,4 +12,18 @@
     <color name="gold">#FFE3B008</color>
     <color name="gold_50">#88E3B008</color>
     <color name="slate">#FF383838</color>
+
+    <!-- Light Theme Colors -->
+    <color name="light_status_bar_color">#FFFFFF</color> <!-- Màu thanh trạng thái sáng -->
+    <color name="light_primary">#6200EE</color> <!-- Màu chính cho nền sáng -->
+    <color name="light_primary_variant">#3700B3</color> <!-- Màu phụ cho nền sáng -->
+    <color name="light_window_background">#FFFFFF</color> <!-- Màu nền ứng dụng sáng -->
+    <color name="light_text_color">#000000</color> <!-- Màu văn bản sáng -->
+
+    <!-- Dark Theme Colors -->
+    <color name="dark_status_bar_color">#121212</color> <!-- Màu thanh trạng thái tối -->
+    <color name="dark_primary">#BB86FC</color> <!-- Màu chính cho nền tối -->
+    <color name="dark_primary_variant">#3700B3</color> <!-- Màu phụ cho nền tối -->
+    <color name="dark_window_background">#121212</color> <!-- Màu nền ứng dụng tối -->
+    <color name="dark_text_color">#FFFFFF</color> <!-- Màu văn bản tối -->
 </resources>

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/black">
+    android:background="?android:attr/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,8 +32,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:backgroundTint="#343434"
-                android:textColor="@color/white"
+                android:backgroundTint="?android:attr/windowBackground"
+                android:textColor="?android:attr/textColor"
                 android:text="@string/no_friends"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -42,7 +42,7 @@
                 android:id="@+id/message"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/rounded_corner_full"
+                android:background="?android:attr/windowBackground"
                 android:src="@drawable/ic_chat"
                 android:textColor="@android:color/white"
                 android:scaleType="centerInside"
@@ -92,8 +92,7 @@
                 android:gravity="center"
                 android:padding="10dp"
                 android:contentDescription="@string/select_from_album"
-                android:backgroundTint="@color/black"
-                android:textColor="@color/white"/>
+                android:background="?android:attr/windowBackground" />
 
             <ImageButton
                 android:id="@+id/camera_screen_btn"
@@ -103,11 +102,10 @@
                 android:scaleType="centerInside"
                 android:gravity="center"
                 android:padding="10dp"
-                android:background="@color/dark_slate"
                 android:contentDescription="@string/take_a_photo"
                 android:layout_marginLeft="60dp"
                 android:layout_marginRight="60dp"
-                android:backgroundTint="@color/black"
+                android:background="?android:attr/windowBackground"
                 android:textColor="@color/white" />
 
             <ImageButton
@@ -119,7 +117,7 @@
                 android:gravity="center"
                 android:padding="10dp"
                 android:contentDescription="@string/change_camera_selfie"
-                android:backgroundTint="@color/black"
+                android:background="?android:attr/windowBackground"
                 android:textColor="@color/white" />
         </LinearLayout>
 
@@ -129,8 +127,8 @@
             android:layout_height="0dp"
             android:layout_weight="0.15"
             android:layout_marginBottom="40dp"
-            android:backgroundTint="#000000"
-            android:textColor="#FFFFFF"
+            android:backgroundTint="?android:attr/windowBackground"
+            android:textColor="?android:attr/textColor"
             android:text="@string/no_history"
             android:textSize="20sp"
             android:textStyle="bold" />
