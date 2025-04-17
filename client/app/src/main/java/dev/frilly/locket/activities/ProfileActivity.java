@@ -290,15 +290,21 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void applyTheme() {
-        if (isDarkTheme) {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        boolean isDark = (nightModeFlags == Configuration.UI_MODE_NIGHT_YES);
+
+        if (isDark) {
             layoutOuter.setBackgroundColor(getResources().getColor(R.color.dark_slate));
             setTextColor(getResources().getColor(R.color.white));
         } else {
             layoutOuter.setBackgroundColor(getResources().getColor(R.color.white));
             setTextColor(getResources().getColor(R.color.black));
         }
+
         buttonBack.setImageResource(R.drawable.ic_arrow_back);
     }
+
 
     private void setTextColor(int color) {
         textName.setTextColor(color);
