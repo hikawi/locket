@@ -6,7 +6,7 @@ package dev.frilly.locket;
  */
 public record Versioning(int major, int minor, int patch) {
 
-  private static final Versioning CURRENT = new Versioning(0, 6, 3);
+  private static final Versioning CURRENT = new Versioning(0, 7, 0);
 
   /**
    * Gets the programmatic version this backend is running on.
@@ -19,7 +19,8 @@ public record Versioning(int major, int minor, int patch) {
 
   @Override
   public String toString() {
-    return "%d.%d.%d".formatted(major, minor, patch);
+    return "%d.%d%s".formatted(major, minor,
+        patch > 0 ? ".%d".formatted(patch) : "");
   }
 
 }

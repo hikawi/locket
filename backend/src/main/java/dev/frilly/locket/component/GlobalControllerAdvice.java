@@ -10,6 +10,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -86,6 +87,12 @@ public final class GlobalControllerAdvice {
     return ResponseEntity.status(ex.getStatusCode())
         .body(new ErrorResponse(ex.getStatusCode().value(),
             String.valueOf(ex.getReason())));
+  }
+
+  @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ErrorResponse handleMaxUploadSize(final MaxUploadSizeExceededException ex) {
+    return new ErrorResponse(ex.getStatusCode().value(), ex.getMessage());
   }
 
 }
