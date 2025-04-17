@@ -108,7 +108,7 @@ public class ProfileActivity extends BaseActivity {
         layoutOuter = findViewById(R.id.layout_outer);
         Button buttonToggleTheme = findViewById(R.id.button_toggle_theme);
 
-        isDarkTheme = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("dark_theme", true);
+        isDarkTheme = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("dark_theme", false);
         applyTheme();
 
         buttonToggleTheme.setOnClickListener(v -> {

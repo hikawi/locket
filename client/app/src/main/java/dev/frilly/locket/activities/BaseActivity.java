@@ -15,12 +15,20 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void applyAppTheme() {
         SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
-        boolean isDarkTheme = prefs.getBoolean("dark_theme", false);
+        boolean isDarkTheme;
+
+        if (prefs.contains("dark_theme")) {
+            isDarkTheme = prefs.getBoolean("dark_theme", false);
+        } else {
+            // Mặc định là tối nếu chưa từng được lưu
+            isDarkTheme = true;
+        }
 
         AppCompatDelegate.setDefaultNightMode(
                 isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
         );
     }
+
 }
 
 
