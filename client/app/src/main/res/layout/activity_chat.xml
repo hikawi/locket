@@ -82,7 +82,10 @@
             android:layout_height="48dp"
             android:src="@drawable/icon_send"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:tint="?attr/colorOnSurface"
+            />
+
     </LinearLayout>
 
 </RelativeLayout>

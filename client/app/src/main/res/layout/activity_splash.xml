@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_slate"
+    android:background="?android:attr/windowBackground"
     tools:context=".activities.SplashActivity">
 
     <LinearLayout
@@ -16,8 +16,8 @@
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
-            android:src="@drawable/background_icon"
-            app:tint="@color/slate"/>
+            android:src="@drawable/locket_four"
+            />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

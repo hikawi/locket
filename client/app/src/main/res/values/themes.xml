@@ -20,6 +20,12 @@
 
         <!-- Màu văn bản trên nền sáng -->
         <item name="android:textColor">@color/light_text_color</item>
+
+        <item name="textColor">#FF000000</item>          <!-- đen -->
+        <item name="textColorInverse">#FFFFFFFF</item>   <!-- trắng -->
+
+        <item name="editTextColor">#FF383838</item> <!-- slate -->
+
     </style>
 
     <style name="circle_corners">

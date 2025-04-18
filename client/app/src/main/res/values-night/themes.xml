@@ -20,5 +20,11 @@
 
         <!-- Màu văn bản trên nền tối -->
         <item name="android:textColor">@color/dark_text_color</item>
+
+        <item name="textColor">#FFFFFFFF</item>          <!-- trắng -->
+        <item name="textColorInverse">#FF000000</item>   <!-- đen -->
+        <item name="editTextColor">#FFD8D0D0</item> <!-- light gray -->
+
+
     </style>
 </resources>

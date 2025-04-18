@@ -48,7 +48,7 @@
         android:text="More Chat"
         android:textSize="18sp"
         android:layout_marginTop="12dp"
-        android:backgroundTint="@color/white"
-        android:textColor="?android:attr/textColor"/>
+        android:backgroundTint="?android:attr/textColor"
+        android:textColor="?attr/textColorInverse"/>
 
 </LinearLayout>
