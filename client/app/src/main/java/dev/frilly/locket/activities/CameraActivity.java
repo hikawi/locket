@@ -98,7 +98,6 @@ public class CameraActivity extends BaseActivity {
         switchCameraButton = findViewById(R.id.share_button);
         historyButton = findViewById(R.id.history_button);
 
-
         previewView = findViewById(R.id.previewView);
         cameraExecutor = Executors.newSingleThreadExecutor();
 
@@ -383,7 +382,7 @@ public class CameraActivity extends BaseActivity {
         if (videoCapture == null || isRecording) return;
 
         try {
-            File videoFile = new File(getExternalFilesDir(null), "video_" + System.currentTimeMillis() + ".mp4");
+            File videoFile = new File(getExternalFilesDir(null), System.currentTimeMillis() + ".mp4");
             FileOutputOptions outputOptions = new FileOutputOptions.Builder(videoFile).build();
 
             currentRecording = videoCapture.getOutput()

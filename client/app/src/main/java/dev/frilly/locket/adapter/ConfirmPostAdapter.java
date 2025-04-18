@@ -1,14 +1,23 @@
 package dev.frilly.locket.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Matrix;
+import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
 import android.net.Uri;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +42,7 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
         this.location = location;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void updateLocation(String userLocation) {
         this.location = userLocation;
         notifyDataSetChanged();
@@ -48,8 +58,19 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int pageType = position % 3; // 0 = Message, 1 = Time, 2 = Location
+        String filePath = images.get(position / 3);
+        boolean isVideo = filePath.endsWith(".mp4") || filePath.endsWith(".mkv");
 
-        holder.imageView.setImageURI(Uri.parse(images.get(position / 3))); // Divide by 3 to match images
+        // Check if user chooses image or video to show on view
+        if (isVideo) {
+            holder.imageView.setVisibility(View.GONE);
+            holder.textureView.setVisibility(View.VISIBLE);
+            holder.textureView.setSurfaceTextureListener(new VideoTextureListener(context, Uri.parse(filePath), holder.textureView));
+        } else {
+            holder.textureView.setVisibility(View.GONE);
+            holder.imageView.setVisibility(View.VISIBLE);
+            holder.imageView.setImageURI(Uri.parse(filePath));
+        }
 
         if (pageType == 0) {
             // Show EditText for message
@@ -109,8 +130,9 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
         return messages.getOrDefault(position, "No Text");
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    protected static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
+        TextureView textureView;
         EditText messageInput;
         LinearLayout timeLayout, locationLayout;
         TextView timeTextView, locationTextView;
@@ -118,6 +140,7 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.item_image_view);
+            textureView = itemView.findViewById(R.id.item_texture_view);
             messageInput = itemView.findViewById(R.id.item_message_input);
 
             timeLayout = itemView.findViewById(R.id.time_layout);
@@ -126,5 +149,83 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
             locationLayout = itemView.findViewById(R.id.location_layout);
             locationTextView = itemView.findViewById(R.id.item_location);
         }
+    }
+
+    public static class ScaledVideoView extends VideoView {
+        public ScaledVideoView(Context context) {
+            super(context);
+        }
+
+        public ScaledVideoView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        public ScaledVideoView(Context context, AttributeSet attrs, int defStyleAttr) {
+            super(context, attrs, defStyleAttr);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            int width = MeasureSpec.getSize(widthMeasureSpec);
+            int height = MeasureSpec.getSize(heightMeasureSpec);
+            setMeasuredDimension(width, height);
+        }
+    }
+
+    // Create listener class for playing video and also adjust video to center and fullscreen like image
+    public static class VideoTextureListener implements TextureView.SurfaceTextureListener {
+        private final Context context;
+        private final Uri videoUri;
+        private final TextureView textureView;
+
+        public VideoTextureListener(Context context, Uri videoUri, TextureView textureView) {
+            this.context = context;
+            this.videoUri = videoUri;
+            this.textureView = textureView;
+        }
+
+        @Override
+        public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surfaceTexture, int width, int height) {
+            try {
+                Surface surface = new Surface(surfaceTexture);
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                mediaPlayer.setDataSource(context, videoUri);
+                mediaPlayer.setSurface(surface);
+                mediaPlayer.setLooping(true);
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    adjustTextureScale(mp.getVideoWidth(), mp.getVideoHeight());
+                    mp.start();
+                });
+                mediaPlayer.prepareAsync();
+            } catch (Exception e) {
+                Log.e("VideoTextureListener", "Video error: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+
+        private void adjustTextureScale(int videoWidth, int videoHeight) {
+            float viewWidth = textureView.getWidth();
+            float viewHeight = textureView.getHeight();
+
+            float videoRatio = (float) videoWidth / videoHeight;
+            float viewRatio = viewWidth / viewHeight;
+
+            float scaleX = 1f;
+            float scaleY = 1f;
+
+            if (videoRatio > viewRatio) {
+                scaleX = videoRatio / viewRatio;
+            } else {
+                scaleY = viewRatio / videoRatio;
+            }
+
+            Matrix matrix = new Matrix();
+            matrix.setScale(scaleX, scaleY, viewWidth / 2f, viewHeight / 2f);
+            textureView.setTransform(matrix);
+        }
+
+        @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
+        @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) { return true; }
+        @Override public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
     }
 }
