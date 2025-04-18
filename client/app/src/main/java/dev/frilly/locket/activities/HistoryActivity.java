@@ -49,7 +49,7 @@ public class HistoryActivity extends BaseActivity {
         userFilterSpinner = findViewById(R.id.user_filter_spinner);
         context = getApplicationContext();
 
-        ImageButton userAvatar = findViewById(R.id.main_user_avatar);
+        ImageButton userAvatar = findViewById(R.id.user_avatar);
         ImageButton sendMessage = findViewById(R.id.message);
         ImageButton returnButton = findViewById(R.id.return_button);
 
