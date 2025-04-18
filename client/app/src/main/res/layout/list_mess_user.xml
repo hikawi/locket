@@ -32,7 +32,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Message"
-            android:textColor="@color/white"
+            android:textColor="?android:attr/textColor"
             android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>

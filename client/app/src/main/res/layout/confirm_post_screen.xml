@@ -29,8 +29,8 @@
 
         <ImageButton
             android:id="@+id/download_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="31dp"
+            android:layout_height="30dp"
             android:background="@null"
             android:contentDescription="@string/download_button"
             android:scaleType="centerInside"
