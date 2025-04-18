@@ -69,12 +69,12 @@ public class HistoryActivity extends BaseActivity {
             Post post = filteredPostList.get(position);
 
             // Debug log to check if correct URL is passed
-            if (post.getImageUrl() == null || post.getImageUrl().isEmpty()) {
+            if (post.getFileUrl() == null || post.getFileUrl().isEmpty()) {
                 Toast.makeText(context, "Error: Image URL is empty!", Toast.LENGTH_SHORT).show();
             }
 
             Intent friendPostIntent = new Intent(HistoryActivity.this, FriendsPostActivity.class);
-            friendPostIntent.putExtra("imageUrl", post.getImageUrl());
+            friendPostIntent.putExtra("fileUrl", post.getFileUrl());
             friendPostIntent.putExtra("message", post.getMessage());
             friendPostIntent.putExtra("username", post.getUsername());
             friendPostIntent.putExtra("postTime", post.getPostTime());

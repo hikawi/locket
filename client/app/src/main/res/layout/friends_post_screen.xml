@@ -76,12 +76,19 @@
                     android:clipToPadding="true">
 
                     <ImageView
-                        android:id="@+id/imageView"
+                        android:id="@+id/friend_image_view"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="false"
                         android:scaleType="centerCrop"
                         android:visibility="visible" />
+
+                    <TextureView
+                        android:id="@+id/friend_texture_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:visibility="gone"/>
 
                     <TextView
                         android:id="@+id/message_confirm_input"
@@ -162,6 +169,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
             android:orientation="horizontal">
 
             <ImageButton
