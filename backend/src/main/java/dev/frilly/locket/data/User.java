@@ -27,7 +27,6 @@ public final class User {
   @Column(nullable = false, unique = true, length = 32)
   private String username;
 
-  @Column(nullable = false)
   private String password;
 
   private LocalDate birthdate = null;

@@ -6,12 +6,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.GetCredentialException;
 
+import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -21,6 +27,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
 
 import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
@@ -42,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private TextView textError;
     private Button loginButton;
+    private ImageButton googleButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,8 +60,10 @@ public class LoginActivity extends AppCompatActivity {
         passwordField = findViewById(R.id.field_password);
         textError = findViewById(R.id.text_error);
         loginButton = findViewById(R.id.button_login);
+        googleButton = findViewById(R.id.button_google);
 
         loginButton.setOnClickListener(this::onLoginClick);
+        googleButton.setOnClickListener(this::onGoogleLoginClick);
     }
 
     private boolean checkValid() {
@@ -92,6 +102,34 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void onGoogleLoginClick(View view) {
+        final var getToken = new GetGoogleIdOption.Builder()
+                .setServerClientId(Constants.WEB_CLIENT_LINK)
+                .setAutoSelectEnabled(false)
+                .build();
+
+        final var getRequest = new GetCredentialRequest.Builder()
+                .addCredentialOption(getToken)
+                .build();
+
+        final var singleThreadExecutor = Executors.newSingleThreadExecutor();
+        Constants.CREDENTIALS_MANAGER.getCredentialAsync(this, getRequest, null,
+                singleThreadExecutor, new CredentialManagerCallback<>() {
+                    @Override
+                    public void onResult(GetCredentialResponse getCredentialResponse) {
+                        final var token = getCredentialResponse.getCredential().getData().getString(
+                                "token");
+                        Log.i("LoginActivity", "Read token " + token);
+                    }
+
+                    @Override
+                    public void onError(@NonNull GetCredentialException e) {
+                        e.printStackTrace();
+                        Log.e("LoginActivity", "Failed loading credentials");
+                    }
+                });
     }
 
     private void fetchUserInfo(String token, OnUserIdFetchedListener listener) {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.credentials.CredentialManager;
 import androidx.room.Room;
 
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         FirebaseFirestore.getInstance().clearPersistence();
 
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(s -> {
@@ -29,7 +31,9 @@ public class MainActivity extends AppCompatActivity {
             new MessagingService().onNewToken(s.getResult());
         });
 
-        //Authentication.unauthenticate(this);
+        Constants.CREDENTIALS_MANAGER = CredentialManager.create(getApplicationContext());
+
+        Authentication.unauthenticate(this);
         Constants.ROOM = Room.databaseBuilder(getApplicationContext(), LocalDatabase.class,
                 "locket-local").allowMainThreadQueries().build();
 

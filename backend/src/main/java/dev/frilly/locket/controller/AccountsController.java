@@ -1,5 +1,6 @@
 package dev.frilly.locket.controller;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import dev.frilly.locket.data.DeviceToken;
 import dev.frilly.locket.data.User;
 import dev.frilly.locket.dto.req.CredentialsRequest;
@@ -10,6 +11,7 @@ import dev.frilly.locket.dto.res.UserResponse;
 import dev.frilly.locket.repo.TokenRepository;
 import dev.frilly.locket.repo.UserRepository;
 import dev.frilly.locket.service.JwtService;
+import dev.frilly.locket.service.NameGeneratorService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 /**
  * Controller for accounts-related routes.
@@ -39,6 +44,51 @@ public final class AccountsController {
   @Autowired
   private TokenRepository tokenRepo;
 
+  @Autowired
+  private GoogleIdTokenVerifier tokenVerifier;
+
+  @Autowired
+  private NameGeneratorService generatorService;
+
+  /**
+   * Handles the post /google endpoint. This allows users to login with Google.
+   */
+  @PostMapping("/google")
+  public TokenResponse postGoogleLogin(@Valid @RequestBody final TokenRequest body) {
+    try {
+      final var id = tokenVerifier.verify(body.token());
+      if (id == null) {
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+            "Google OAuth verification failed");
+      }
+
+      final var email = id.getPayload().getEmail();
+      final var user  = userRepo.findByEmail(email);
+
+      // The user's registered with Google, and now is attempting to login
+      // with Google. We can allow that.
+      if (user.isPresent()) {
+        return new TokenResponse(jwtService.encode(user.get().id()));
+      }
+
+      // If not, we'll try to register the user anyway.
+      final var name     = (String) id.getPayload().get("name");
+      final var username = generatorService.generateUsername(name);
+
+      final var newUser = new User();
+      newUser.setEmail(email);
+      newUser.setUsername(username);
+      final var savedUser = userRepo.save(newUser);
+      return new TokenResponse(jwtService.encode(savedUser.id()));
+    } catch (GeneralSecurityException e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+          "General Security Exception occurred while verifying token");
+    } catch (IOException e) {
+      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+          "IOException occurred while verifying token");
+    }
+  }
+
   /**
    * Handles the POST login request.
    */
@@ -49,6 +99,13 @@ public final class AccountsController {
     // No user exists.
     if (user.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+    }
+
+    // The password doesn't exist, meaning the user was registered with Google.
+    // We deny this.
+    if (user.get().password() == null) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "This account was registered with Google");
     }
 
     // Wrong password
