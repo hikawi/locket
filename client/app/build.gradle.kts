@@ -66,6 +66,11 @@ dependencies {
     annotationProcessor(libs.androidx.room.compiler)
     implementation(libs.androidx.room.guava)
 
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.play.services.auth)
+    implementation(libs.googleid)
+
     implementation("com.google.guava:guava:31.0.1-android")
     //scale size unit (support for different screen size)
     implementation("com.intuit.sdp:sdp-android:1.0.6")

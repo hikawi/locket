@@ -60,4 +60,7 @@
     <string name="error_username_invalid">Username is invalid</string>
     <string name="error_already_requested">You already sent a friend request</string>
     <string name="error_self">Silly you!</string>
+
+    <string name="error_google">Can\'t get Google credentials! Are you signed in to your
+        device?</string>
 </resources>
