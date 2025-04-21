@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Constants.CREDENTIALS_MANAGER = CredentialManager.create(getApplicationContext());
-
-        Authentication.unauthenticate(this);
         Constants.ROOM = Room.databaseBuilder(getApplicationContext(), LocalDatabase.class,
                 "locket-local").allowMainThreadQueries().build();
 

@@ -78,6 +78,7 @@ public final class AccountsController {
       final var newUser = new User();
       newUser.setEmail(email);
       newUser.setUsername(username);
+      newUser.setPassword("");
       final var savedUser = userRepo.save(newUser);
       return new TokenResponse(jwtService.encode(savedUser.id()));
     } catch (GeneralSecurityException e) {
@@ -103,7 +104,7 @@ public final class AccountsController {
 
     // The password doesn't exist, meaning the user was registered with Google.
     // We deny this.
-    if (user.get().password() == null) {
+    if (user.get().password().isBlank()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
           "This account was registered with Google");
     }

@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.CustomCredential;
 import androidx.credentials.GetCredentialRequest;
 import androidx.credentials.GetCredentialResponse;
 import androidx.credentials.exceptions.GetCredentialException;
 
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption;
+import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -33,6 +35,7 @@ import dev.frilly.locket.Authentication;
 import dev.frilly.locket.Constants;
 import dev.frilly.locket.R;
 import dev.frilly.locket.services.ProfileService;
+import dev.frilly.locket.utils.AndroidUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
@@ -107,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     private void onGoogleLoginClick(View view) {
         final var getToken = new GetGoogleIdOption.Builder()
                 .setServerClientId(Constants.WEB_CLIENT_LINK)
+                .setFilterByAuthorizedAccounts(false)
                 .setAutoSelectEnabled(false)
                 .build();
 
@@ -116,20 +120,7 @@ public class LoginActivity extends AppCompatActivity {
 
         final var singleThreadExecutor = Executors.newSingleThreadExecutor();
         Constants.CREDENTIALS_MANAGER.getCredentialAsync(this, getRequest, null,
-                singleThreadExecutor, new CredentialManagerCallback<>() {
-                    @Override
-                    public void onResult(GetCredentialResponse getCredentialResponse) {
-                        final var token = getCredentialResponse.getCredential().getData().getString(
-                                "token");
-                        Log.i("LoginActivity", "Read token " + token);
-                    }
-
-                    @Override
-                    public void onError(@NonNull GetCredentialException e) {
-                        e.printStackTrace();
-                        Log.e("LoginActivity", "Failed loading credentials");
-                    }
-                });
+                singleThreadExecutor, new GoogleCredentialManager());
     }
 
     private void fetchUserInfo(String token, OnUserIdFetchedListener listener) {
@@ -199,8 +190,84 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void nextStep(String body) {
+        try {
+            final var obj = new JSONObject(body);
+            Authentication.saveToken(this, obj.getString("token"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        final Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+    }
+
     interface OnUserIdFetchedListener {
         void onUserIdFetched(String userId);
+    }
+
+    private class GoogleCredentialManager implements CredentialManagerCallback<GetCredentialResponse,
+            GetCredentialException> {
+
+        @Override
+        public void onError(@NonNull GetCredentialException e) {
+            e.printStackTrace();
+            Log.e("LoginActivity", "Failed getting google credentials");
+            AndroidUtil.showToast(LoginActivity.this, getString(R.string.error_google));
+        }
+
+        @Override
+        public void onResult(GetCredentialResponse getCredentialResponse) {
+            final var cred = getCredentialResponse.getCredential();
+            if (!(cred instanceof CustomCredential)
+                    || !cred.getType().equals(GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL)) {
+                return;
+            }
+
+            final var tokenCred = GoogleIdTokenCredential.createFrom(cred.getData());
+            try {
+                final var body = new JSONObject();
+                body.put("token", tokenCred.getIdToken());
+
+                final var req = new Request.Builder()
+                        .url(Constants.BACKEND_URL + "google")
+                        .post(RequestBody.create(body.toString(), Constants.JSON))
+                        .build();
+
+                Constants.HTTP_CLIENT.newCall(req).enqueue(new PostGoogleCallback());
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("LoginActivity", "Error sending token to backend");
+            }
+        }
+
+    }
+
+    private class PostGoogleCallback implements Callback {
+
+        @Override
+        public void onFailure(@NonNull Call call, @NonNull IOException e) {
+            e.printStackTrace();
+            AndroidUtil.showToast(LoginActivity.this, getString(R.string.error_google));
+        }
+
+        @Override
+        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+            final String body = (response.body() != null) ? response.body().string() : null;
+            response.close();
+
+            runOnUiThread(() -> {
+                switch (response.code()) {
+                    case 409:
+                        textError.setText(R.string.error_username_taken);
+                        break;
+                    case 200:
+                        nextStep(body);
+                        break;
+                }
+            });
+        }
+
     }
 
     private class PostLoginCallback implements Callback {

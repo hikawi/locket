@@ -35,8 +35,10 @@ public final class NameGeneratorService {
    */
   public String generateUsername(final String name) {
     // Attempt to slugify the name from the Google's profile to provide
-    var slug = Normalizer.normalize(name, Form.NFC)
+    var slug = Normalizer.normalize(name, Form.NFD)
         .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
+        .replaceAll("[^\\p{ASCII}]", "")
+        .replaceAll("\\p{M}", "")
         .replaceAll("\\s+", "-")
         .toLowerCase(Locale.ROOT);
 
