@@ -1,6 +1,9 @@
 package dev.frilly.locket.activities;
 
+import static androidx.core.graphics.drawable.DrawableCompat.applyTheme;
+
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.bumptech.glide.Glide;
 
@@ -43,7 +47,7 @@ import okhttp3.Response;
 /**
  * The activity to view the user profile.
  */
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
 
     private ImageButton buttonBack;
 
@@ -56,6 +60,8 @@ public class ProfileActivity extends AppCompatActivity {
     private Button buttonAddWidget;
     private Button buttonLogout;
     private Button buttonDeleteAccount;
+    private boolean isDarkTheme;
+    private View layoutOuter;
 
     private ActivityResultLauncher<Intent> mediaPickerLauncher;
 
@@ -76,6 +82,8 @@ public class ProfileActivity extends AppCompatActivity {
         buttonLogout = findViewById(R.id.button_logout);
         buttonDeleteAccount = findViewById(R.id.button_delete_account);
 
+
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
         buttonBack.setOnClickListener(v -> finish());
         buttonEditInfo.setOnClickListener(e -> {
             final var intent = new Intent(this, ProfileEditInfoActivity.class);
@@ -96,6 +104,30 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        layoutOuter = findViewById(R.id.layout_outer);
+        Button buttonToggleTheme = findViewById(R.id.button_toggle_theme);
+
+        isDarkTheme = getSharedPreferences("settings", MODE_PRIVATE).getBoolean("dark_theme", false);
+        applyTheme();
+
+        buttonToggleTheme.setOnClickListener(v -> {
+            isDarkTheme = !isDarkTheme;
+
+            // Lưu lại trạng thái
+            getSharedPreferences("settings", MODE_PRIVATE)
+                    .edit().putBoolean("dark_theme", isDarkTheme).apply();
+
+            // Áp dụng theme mới
+            AppCompatDelegate.setDefaultNightMode(
+                    isDarkTheme ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
+            );
+
+            // Tải lại activity để áp dụng thay đổi
+            recreate();
+        });
+
+
 
 
         loadInfo();
@@ -256,5 +288,30 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
     }
+
+    private void applyTheme() {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        boolean isDark = (nightModeFlags == Configuration.UI_MODE_NIGHT_YES);
+
+        if (isDark) {
+            layoutOuter.setBackgroundColor(getResources().getColor(R.color.dark_slate));
+            setTextColor(getResources().getColor(R.color.white));
+        } else {
+            layoutOuter.setBackgroundColor(getResources().getColor(R.color.white));
+            setTextColor(getResources().getColor(R.color.black));
+        }
+
+        buttonBack.setImageResource(R.drawable.ic_arrow_back);
+    }
+
+
+    private void setTextColor(int color) {
+        textName.setTextColor(color);
+        buttonChangeEmail.setTextColor(color);
+        buttonAddWidget.setTextColor(color);
+        buttonLogout.setTextColor(color);
+    }
+
 
 }

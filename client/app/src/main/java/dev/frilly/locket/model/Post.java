@@ -1,20 +1,20 @@
 package dev.frilly.locket.model;
 
 public class Post {
-    private String imageUrl;
+    private String fileUrl;
     private String username;
     private String message;
     private String postTime;
 
-    public Post(String imageUrl, String username, String message, String postTime) {
-        this.imageUrl = imageUrl;
+    public Post(String fileUrl, String username, String message, String postTime) {
+        this.fileUrl = fileUrl;
         this.username = username;
         this.message = message;
         this.postTime = postTime;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getFileUrl() {
+        return fileUrl;
     }
 
     public String getUsername() {

@@ -30,6 +30,13 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
 
+            <TextureView
+                android:id="@+id/item_texture_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+
             <EditText
                 android:id="@+id/item_message_input"
                 android:layout_width="160dp"
@@ -41,7 +48,7 @@
                 android:padding="10dp"
                 android:textAlignment="center"
                 android:textColor="@color/white"
-                android:textColorHint="@color/white"
+                android:textColorHint="@color/very_light_gray"
                 android:textSize="20sp"
                 android:visibility="gone" />
 

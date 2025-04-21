@@ -113,21 +113,6 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
         });
     }
 
-    public static void getFriendsList(String userId, OnSuccessListener<List<String>> onSuccess) {
-        FirebaseFirestore.getInstance()
-                .collection("friends") // Giả sử danh sách bạn bè được lưu trong collection này
-                .document(userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        List<String> friendsList = (List<String>) documentSnapshot.get("friendIds");
-                        onSuccess.onSuccess(friendsList);
-                    } else {
-                        onSuccess.onSuccess(new ArrayList<>()); // Nếu không có bạn bè
-                    }
-                })
-                .addOnFailureListener(e -> onSuccess.onSuccess(new ArrayList<>()));
-    }
 
     @NonNull
     @Override

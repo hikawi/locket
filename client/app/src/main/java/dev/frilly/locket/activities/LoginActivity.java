@@ -35,7 +35,7 @@ import okhttp3.Response;
 /**
  * The activity for the login screen.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private EditText usernameField;
     private EditText passwordField;

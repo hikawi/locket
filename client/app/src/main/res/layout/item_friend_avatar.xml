@@ -23,6 +23,6 @@
         android:gravity="center"
         android:maxLines="1"
         android:text="username"
-        android:textColor="@android:color/white"
+        android:textColor="?android:attr/textColor"
         android:textSize="14sp" />
 </LinearLayout>

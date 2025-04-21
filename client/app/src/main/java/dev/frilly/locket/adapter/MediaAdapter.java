@@ -41,7 +41,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = postList.get(position);
-        Glide.with(context).load(post.getImageUrl()).into(holder.imageView);
+        Glide.with(context).load(post.getFileUrl()).into(holder.imageView);
     }
 
     @Override
@@ -64,6 +64,3 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.ViewHolder> 
         }
     }
 }
-
-
-

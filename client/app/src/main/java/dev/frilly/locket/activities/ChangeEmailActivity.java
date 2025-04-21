@@ -31,7 +31,7 @@ import okhttp3.Response;
 /**
  * The activity to change email after authentication.
  */
-public class ChangeEmailActivity extends AppCompatActivity {
+public class ChangeEmailActivity extends BaseActivity {
 
     private ImageButton buttonBack;
     private EditText fieldEmail;

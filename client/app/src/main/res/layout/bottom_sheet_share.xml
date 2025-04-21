@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/black"
+    android:background="?android:attr/windowBackground"
     android:padding="16dp"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="bottom">
@@ -15,13 +15,13 @@
         android:text="Chọn bạn để chia sẻ"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="@color/white"
+        android:textColor="?android:attr/textColor"
         android:paddingBottom="8dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/friends_recycler"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="150dp"
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
         android:layout_marginTop="4dp"

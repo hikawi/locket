@@ -4,7 +4,7 @@
     android:id="@+id/layout_outer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_slate">
+    android:background="?android:attr/windowBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:fontFamily="@font/inter"
             android:text="@string/text_birthday_question"
             android:textAlignment="center"
-            android:textColor="@color/white"
+            android:textColor="?android:attr/textColor"
             android:textFontWeight="600"
             android:textSize="32sp"
             app:layout_constraintBottom_toTopOf="@id/view_separator"
@@ -68,6 +68,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints="username"
+                android:textColor="?android:attr/textColor"
+                android:textColorHint="?android:attr/textColor"
                 android:fontFamily="@font/inter"
                 android:hint="@string/text_dob"
                 android:textFontWeight="200" />

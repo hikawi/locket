@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import dev.frilly.locket.R;
 
-public class RecentChatsActivity extends AppCompatActivity {
+public class RecentChatsActivity extends BaseActivity {
 
     private static final String TAG = "RecentChatsActivity";
 

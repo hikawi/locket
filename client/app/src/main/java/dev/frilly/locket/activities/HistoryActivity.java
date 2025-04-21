@@ -30,7 +30,7 @@ import dev.frilly.locket.model.Post;
 import dev.frilly.locket.model.PostCache;
 import dev.frilly.locket.room.entities.UserProfile;
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends BaseActivity {
     private RecyclerView imageRecyclerView;
     private MediaAdapter mediaAdapter;
     private ArrayList<Post> postList = new ArrayList<>();
@@ -49,7 +49,7 @@ public class HistoryActivity extends AppCompatActivity {
         userFilterSpinner = findViewById(R.id.user_filter_spinner);
         context = getApplicationContext();
 
-        ImageButton userAvatar = findViewById(R.id.main_user_avatar);
+        ImageButton userAvatar = findViewById(R.id.user_avatar);
         ImageButton sendMessage = findViewById(R.id.message);
         ImageButton returnButton = findViewById(R.id.return_button);
 
@@ -69,12 +69,12 @@ public class HistoryActivity extends AppCompatActivity {
             Post post = filteredPostList.get(position);
 
             // Debug log to check if correct URL is passed
-            if (post.getImageUrl() == null || post.getImageUrl().isEmpty()) {
+            if (post.getFileUrl() == null || post.getFileUrl().isEmpty()) {
                 Toast.makeText(context, "Error: Image URL is empty!", Toast.LENGTH_SHORT).show();
             }
 
             Intent friendPostIntent = new Intent(HistoryActivity.this, FriendsPostActivity.class);
-            friendPostIntent.putExtra("imageUrl", post.getImageUrl());
+            friendPostIntent.putExtra("fileUrl", post.getFileUrl());
             friendPostIntent.putExtra("message", post.getMessage());
             friendPostIntent.putExtra("username", post.getUsername());
             friendPostIntent.putExtra("postTime", post.getPostTime());

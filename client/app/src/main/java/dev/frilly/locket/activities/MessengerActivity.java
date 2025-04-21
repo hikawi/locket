@@ -19,7 +19,7 @@ import dev.frilly.locket.adapter.ListUserAdapter;
 import dev.frilly.locket.model.User;
 import dev.frilly.locket.utils.AndroidUtil;
 
-public class MessengerActivity extends AppCompatActivity {
+public class MessengerActivity extends BaseActivity {
     private static final String TAG = "MessengerActivity";
     private RecyclerView recyclerView;
     private ListUserAdapter userAdapter;

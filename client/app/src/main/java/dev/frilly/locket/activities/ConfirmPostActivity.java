@@ -8,21 +8,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +24,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,9 +34,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -68,9 +59,8 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
-import com.google.android.gms.tasks.OnSuccessListener;
 
-public class ConfirmPostActivity extends AppCompatActivity {
+public class ConfirmPostActivity extends BaseActivity {
     private Context context;
     private ConfirmPostAdapter adapter;
     private LinearLayout dotsLayout;
@@ -78,7 +68,7 @@ public class ConfirmPostActivity extends AppCompatActivity {
     private String fileType;
     private String filePath;
     private ViewPager2 viewPager;
-    private List<String> images;
+    private List<String> files;
     private String userLocation = "Unknown Location"; // Default
     private FusedLocationProviderClient fusedLocationClient;
     private SendToFriendsAdapter sendToFriendsAdapter;
@@ -115,10 +105,10 @@ public class ConfirmPostActivity extends AppCompatActivity {
         if (intent != null) {
             filePath = intent.getStringExtra("file_path");
             fileType = intent.getStringExtra("file_type");
-            images = Collections.singletonList(filePath);
+            files = Collections.singletonList(filePath);
         }
 
-        adapter = new ConfirmPostAdapter(this, images, userLocation);
+        adapter = new ConfirmPostAdapter(this, files, userLocation);
         viewPager.setAdapter(adapter);
 
         // Show dots indicating screen position
@@ -162,7 +152,7 @@ public class ConfirmPostActivity extends AppCompatActivity {
     @SuppressLint("UseCompatLoadingForDrawables")
     private void addDotsIndicator() {
         int NUMBER_OF_PAGES = 3;
-        int dotsCount = images.size() * NUMBER_OF_PAGES;
+        int dotsCount = files.size() * NUMBER_OF_PAGES;
         dots = new ImageView[dotsCount];
 
         for (int i = 0; i < dotsCount; i++) {
@@ -296,7 +286,7 @@ public class ConfirmPostActivity extends AppCompatActivity {
 
             // Detect MIME type dynamically
             String mimeType = getMimeType(filePath);
-            if (mimeType == null || !mimeType.startsWith("image/")) {
+            if (mimeType == null) {
                 AlertDialog.Builder invalidImageBuilder = new AlertDialog.Builder(this);
                 invalidImageBuilder.setTitle("Error Posting")
                         .setMessage("Invalid image file! Please try again later")
@@ -307,6 +297,8 @@ public class ConfirmPostActivity extends AppCompatActivity {
 
             Log.d("File Upload", "Uploading file: " + filePath);
             Log.d("File Debug", "Detected MIME Type: " + mimeType);
+
+            String fileToUpload = fileType + "_" + file.getName();
 
             // Get message text or time or location
             int currentItem = viewPager.getCurrentItem();
@@ -322,7 +314,7 @@ public class ConfirmPostActivity extends AppCompatActivity {
             // Build request body
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("image", file.getName(), RequestBody.create(file, MediaType.parse(mimeType)))
+                    .addFormDataPart("image", fileToUpload, RequestBody.create(file, MediaType.parse(mimeType)))
                     .addFormDataPart("message", dataToSend) // Add user message
                     .addFormDataPart("viewers", viewers)  // Add appropriate values if needed
                     .build();
@@ -336,6 +328,8 @@ public class ConfirmPostActivity extends AppCompatActivity {
 
             // Execute request asynchronously
             Constants.HTTP_CLIENT.newCall(request).enqueue(new MakePostCallBack());
+
+            Log.d("ConfirmPostActivity", "File uploaded to DB: " + fileToUpload);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -355,8 +349,7 @@ public class ConfirmPostActivity extends AppCompatActivity {
             // Check file extension
             String extension = filePath.substring(filePath.lastIndexOf(".") + 1).toLowerCase();
             switch (extension) {
-                case "jpg":
-                case "jpeg":
+                case "jpg": case "jpeg":
                     return "image/jpeg";
                 case "png":
                     return "image/png";
@@ -364,6 +357,14 @@ public class ConfirmPostActivity extends AppCompatActivity {
                     return "image/gif";
                 case "webp":
                     return "image/webp";
+                case "mp4":
+                    return "video/mp4";
+                case "quicktime":
+                    return "video/quicktime";
+                case "avi":
+                    return "video/avi";
+                case "webm":
+                    return "video/webm";
                 default:
                     return null; // Unsupported type
             }
@@ -385,56 +386,39 @@ public class ConfirmPostActivity extends AppCompatActivity {
                 case 413:
                     AlertDialog.Builder builder413 = new AlertDialog.Builder(ConfirmPostActivity.this);
                     builder413.setTitle("Error Code 413")
-                            .setMessage("Image is too big. Please try other image")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    getOnBackPressedDispatcher().onBackPressed();
-                                }
-                            })
+                            .setMessage("File is too big. Please try again")
+                            .setNegativeButton("OK", (dialogInterface, i) -> getOnBackPressedDispatcher().onBackPressed())
                             .show();
                     break;
                 case 401:
                     AlertDialog.Builder builder401 = new AlertDialog.Builder(ConfirmPostActivity.this);
                     builder401.setTitle("Error Code 401")
                             .setMessage("Authentication failed! Please log in again")
-                            .setNegativeButton("OK", null)
+                            .setNegativeButton("OK", (dialogInterface, i) -> {
+                                startActivity(new Intent(ConfirmPostActivity.this, LoginActivity.class));
+                                finish();
+                            })
                             .show();
                     break;
                 case 400:
                     AlertDialog.Builder builder400 = new AlertDialog.Builder(ConfirmPostActivity.this);
                     builder400.setTitle("Error Code 400")
-                            .setMessage("Invalid image. Please try other image")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    getOnBackPressedDispatcher().onBackPressed();
-                                }
-                            })
+                            .setMessage("Invalid File. Please try again")
+                            .setNegativeButton("OK", (dialogInterface, i) -> getOnBackPressedDispatcher().onBackPressed())
                             .show();
                     break;
                 case 200:
                     AlertDialog.Builder builder200 = new AlertDialog.Builder(ConfirmPostActivity.this);
                     builder200.setTitle("Complete")
-                            .setMessage("Image uploaded successfully!")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    getOnBackPressedDispatcher().onBackPressed();
-                                }
-                            })
+                            .setMessage("File uploaded successfully!")
+                            .setNegativeButton("OK", (dialogInterface, i) -> getOnBackPressedDispatcher().onBackPressed())
                             .show();
                     break;
                 default:
                     AlertDialog.Builder builderUnknown = new AlertDialog.Builder(ConfirmPostActivity.this);
-                    builderUnknown.setTitle("Unknown Error")
-                            .setMessage("Unknown error code. Please try again later")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    getOnBackPressedDispatcher().onBackPressed();
-                                }
-                            })
+                    builderUnknown.setTitle("Error Code " + code)
+                            .setMessage("Unknown error. Please try again later")
+                            .setNegativeButton("OK", (dialogInterface, i) -> getOnBackPressedDispatcher().onBackPressed())
                             .show();
                     break;
             }
