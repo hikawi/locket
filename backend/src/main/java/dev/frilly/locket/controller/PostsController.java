@@ -21,8 +21,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -73,24 +73,26 @@ public final class PostsController {
   public PostResponse postPost(
       @RequestPart MultipartFile image,
       @RequestPart String message,
-      @RequestPart String viewers
+      @RequestPart(required = false) String viewers
   ) {
     final var auth = SecurityContextHolder.getContext().getAuthentication();
     final var user = (User) auth.getPrincipal();
 
-    final var viewersSet = Arrays.stream(viewers.split(",")).map(it -> {
-      long id = -1;
-      try {
-        id = Long.parseLong(it);
-      } catch (NumberFormatException ex) {
-      }
-      return id;
-    }).collect(Collectors.toSet());
-    final var query = userRepo.findByIds(viewersSet);
-
     final var url = uploadImage(image);
     final var obj = new Post(user, url, message);
-    obj.viewers().addAll(query);
+
+    if (viewers != null && !viewers.isBlank()) {
+      final var viewersSet = Arrays.stream(viewers.split(",")).map(it -> {
+        long id = -1;
+        try {
+          id = Long.parseLong(it);
+        } catch (NumberFormatException ex) {
+        }
+        return id;
+      }).collect(Collectors.toSet());
+      final var query = userRepo.findByIds(viewersSet);
+      obj.viewers().addAll(query);
+    }
 
     final var savedObj = postRepo.save(obj);
     return savedObj.makeResponse();
@@ -102,13 +104,20 @@ public final class PostsController {
       throw new ResponseStatusException(HttpStatus.REQUEST_ENTITY_TOO_LARGE);
     }
 
-    final var allowed = List.of("image/webp", "image/jpeg", "image/png");
+    final var allowed = List.of("image/webp", "image/jpeg", "image/png",
+        "video/mp4", "video/quicktime", "video/avi", "video/webm");
+    System.out.println(image.getContentType());
     if (!allowed.contains(image.getContentType())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
 
     try {
-      final var res = cloudinary.uploader().upload(image.getBytes(), Map.of());
+      final var options = new HashMap<String, Object>();
+      if (image.getContentType().startsWith("video")) {
+        options.put("resource_type", "video");
+      }
+
+      final var res = cloudinary.uploader().upload(image.getBytes(), options);
       return (String) res.get("secure_url");
     } catch (IOException ex) {
       ex.printStackTrace();

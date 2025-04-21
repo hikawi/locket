@@ -12,6 +12,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import dev.frilly.locket.activities.CameraActivity;
 import dev.frilly.locket.activities.WelcomeActivity;
+import dev.frilly.locket.firebase.MessagingService;
 import dev.frilly.locket.room.LocalDatabase;
 import dev.frilly.locket.utils.FirebaseUtil;
 
@@ -22,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseFirestore.getInstance().clearPersistence();
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(s -> {
+            Log.i("MainActivity", "Retrieved token " + s);
+            new MessagingService().onNewToken(s.getResult());
+        });
 
         //Authentication.unauthenticate(this);
         Constants.ROOM = Room.databaseBuilder(getApplicationContext(), LocalDatabase.class,
