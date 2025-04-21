@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_outer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?android:attr/windowBackground"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="?android:attr/windowBackground">
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingVertical="12dp">
 
         <!-- Nút Back -->
@@ -18,20 +19,20 @@
             android:id="@+id/back_btn"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_arrow_back"
+            android:background="?android:attr/windowBackground"
             android:padding="8dp"
-            android:background="?android:attr/windowBackground" />
+            android:src="@drawable/ic_arrow_back" />
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Recent Chats"
-            android:textSize="24sp"
-            android:textStyle="bold"
             android:gravity="center"
+            android:paddingStart="-16dp"
+            android:text="Recent Chats"
             android:textColor="?android:attr/textColor"
-            android:paddingStart="-16dp"/>
+            android:textSize="24sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Container để chứa ChatFragment -->
@@ -39,16 +40,16 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
     <Button
         android:id="@+id/btn_open_messenger"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="More Chat"
-        android:textSize="18sp"
         android:layout_marginTop="12dp"
         android:backgroundTint="?android:attr/textColor"
-        android:textColor="?attr/textColorInverse"/>
+        android:text="More Chat"
+        android:textColor="?attr/textColorInverse"
+        android:textSize="18sp" />
 
 </LinearLayout>

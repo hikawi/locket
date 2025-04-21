@@ -6,6 +6,8 @@ import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,10 +33,10 @@ import java.util.Locale;
 import dev.frilly.locket.R;
 
 public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.ViewHolder> {
-    private Context context;
-    private List<String> images;
+    private final Context context;
+    private final List<String> images;
+    private final HashMap<Integer, String> messages = new HashMap<>(); // Store messages for each page
     private String location;
-    private HashMap<Integer, String> messages = new HashMap<>(); // Store messages for each page
 
     public ConfirmPostAdapter(Context context, List<String> images, String location) {
         this.context = context;
@@ -52,7 +54,25 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_confirm_post, parent, false);
-        return new ViewHolder(view);
+        final var holder = new ViewHolder(view);
+        holder.messageInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // a
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // aa
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                messages.put(0, editable.toString());
+            }
+        });
+
+        return holder;
     }
 
     @Override
@@ -224,8 +244,17 @@ public class ConfirmPostAdapter extends RecyclerView.Adapter<ConfirmPostAdapter.
             textureView.setTransform(matrix);
         }
 
-        @Override public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {}
-        @Override public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) { return true; }
-        @Override public void onSurfaceTextureUpdated(SurfaceTexture surface) {}
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+            return true;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+        }
     }
 }

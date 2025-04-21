@@ -8,10 +8,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
 import dev.frilly.locket.R;
+import dev.frilly.locket.utils.AndroidUtil;
 
 public class RecentChatsActivity extends BaseActivity {
 
@@ -21,6 +22,7 @@ public class RecentChatsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent_chats);
+        AndroidUtil.applyInsets(this, R.id.layout_outer);
         Log.d(TAG, "onCreate: Activity started");
 
         // Thêm ChatFragment vào layout
