@@ -49,7 +49,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/slate"
-                android:textColor="?android:attr/textColor"
+                android:textColor="@color/white"
                 android:text="@string/no_friends"
                 android:textSize="20sp"
                 android:textStyle="bold"

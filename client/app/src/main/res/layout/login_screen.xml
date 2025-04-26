@@ -66,6 +66,7 @@
                 android:autofillHints="username"
                 android:fontFamily="@font/inter"
                 android:hint="@string/text_username"
+                android:textColor="@color/black"
                 android:textColorHint="?android:attr/textColor"
                 android:textFontWeight="200" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -96,6 +97,7 @@
                 android:hint="@string/text_password"
                 android:inputType="textPassword"
                 android:textColorHint="?android:attr/textColor"
+                android:textColor="@color/black"
                 android:textFontWeight="200" />
         </com.google.android.material.textfield.TextInputLayout>
 

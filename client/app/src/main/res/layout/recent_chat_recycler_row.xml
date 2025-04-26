@@ -29,14 +29,14 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:id="@+id/user_name_text"
-                android:textColor="@color/white"/>
+                android:textColor="@color/black"/>
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="10:00"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="10dp"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:id="@+id/last_message_time_text"/>
         </RelativeLayout>
 
@@ -44,7 +44,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="+000000000000"
-            android:textColor="@color/very_light_gray"
+            android:textColor="@color/black"
             android:id="@+id/last_message_text"/>
     </LinearLayout>
 </LinearLayout>

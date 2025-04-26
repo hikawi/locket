@@ -10,19 +10,20 @@ public class User {
     private String password;
     private String dob;
     private Timestamp createdTimestamp;
-
     private String fcmToken;
+    private String avatar; // 🆕 thêm field avatar
 
     public User() {
     }
 
-    public User(String dob, String username, String email, String password, Timestamp createdTimestamp, String userId) {
+    public User(String dob, String username, String email, String password, Timestamp createdTimestamp, String userId, String avatar) {
         this.dob = dob;
         this.username = username;
         this.email = email;
         this.password = password;
         this.createdTimestamp = createdTimestamp;
         this.userId = userId;
+        this.avatar = avatar; // 🆕 thêm avatar vào constructor
     }
 
     public String getUserId() {
@@ -81,6 +82,11 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
-    public void setText(String username) {
+    public String getAvatar() {
+        return avatar; // 🆕 Getter avatar
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar; // 🆕 Setter avatar
     }
 }
