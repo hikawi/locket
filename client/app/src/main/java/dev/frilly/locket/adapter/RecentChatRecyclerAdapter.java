@@ -2,7 +2,6 @@ package dev.frilly.locket.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,15 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import dev.frilly.locket.Constants;
@@ -67,7 +61,6 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
                             return;
                         }
 
-                        // 🔥 Kiểm tra xem user này có phải bạn bè không bằng LocalDatabase
                         Constants.ROOM.userProfileDao().getProfiles().observeForever(profiles -> {
                             if (profiles == null || profiles.isEmpty()) {
                                 Log.d("ChatroomAdapter", "Không có danh sách bạn bè.");
@@ -85,16 +78,25 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
                                 return;
                             }
 
-                            // 🔥 Nếu là bạn bè, tiếp tục hiển thị
-                            FirebaseUtil.getOtherProfilePicStorageRef(otherUserModel.getUserId()).getDownloadUrl()
-                                    .addOnCompleteListener(t -> {
-                                        if (t.isSuccessful() && t.getResult() != null) {
-                                            Uri uri = t.getResult();
-                                            AndroidUtil.setProfilePic(context, uri, holder.profilePic);
-                                        } else {
-                                            Log.e("ChatroomAdapter", "Failed to load profile pic");
-                                        }
-                                    });
+                            // 🔥 Load avatar từ local database
+                            String avatarUrl = null;
+                            for (UserProfile profile : profiles) {
+                                if (String.valueOf(profile.id).equals(otherUserModel.getUserId())) {
+                                    avatarUrl = profile.avatarUrl;
+                                    break;
+                                }
+                            }
+
+                            if (avatarUrl != null && !avatarUrl.isEmpty()) {
+                                holder.profilePic.setColorFilter(null);
+                                Glide.with(holder.itemView.getContext())
+                                        .load(avatarUrl)
+                                        .circleCrop()
+                                        .into(holder.profilePic);
+                            } else {
+                                holder.profilePic.setImageResource(R.drawable.person_icon);
+                                holder.profilePic.setColorFilter(holder.itemView.getContext().getColor(R.color.slate));
+                            }
 
                             holder.usernameText.setText(otherUserModel.getUsername());
                             holder.lastMessageText.setText(lastMessageSentByMe ? "You: " + model.getLastMessage() : model.getLastMessage());
@@ -113,7 +115,6 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
         });
     }
 
-
     @NonNull
     @Override
     public ChatroomModelViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -124,7 +125,7 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
     @Override
     public void onDataChanged() {
         super.onDataChanged();
-        notifyDataSetChanged(); // Cập nhật lại danh sách
+        notifyDataSetChanged();
         Log.d("ChatroomAdapter", "Updated chatroom count: " + getItemCount());
     }
 
@@ -137,7 +138,7 @@ public class RecentChatRecyclerAdapter extends FirestoreRecyclerAdapter<Chatroom
             usernameText = itemView.findViewById(R.id.user_name_text);
             lastMessageText = itemView.findViewById(R.id.last_message_text);
             lastMessageTime = itemView.findViewById(R.id.last_message_time_text);
-            //profilePic = itemView.findViewById(R.id.profile_pic_image_view);
+            profilePic = itemView.findViewById(R.id.profile_pic);
         }
     }
 }

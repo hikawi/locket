@@ -22,7 +22,8 @@
             android:text="Username"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="?android:attr/textColor"            android:layout_marginStart="10dp"
+            android:textColor="?android:attr/textColor"
+            android:layout_marginStart="10dp"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/profile_pic_layout"/>
 

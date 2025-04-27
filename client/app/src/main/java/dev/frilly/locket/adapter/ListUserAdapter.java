@@ -15,12 +15,15 @@ import androidx.lifecycle.Observer;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import dev.frilly.locket.Constants;
@@ -40,7 +43,7 @@ import dev.frilly.locket.utils.FirebaseUtil;
 public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdapter.UserViewHolder> {
 
     private static final String TAG = "ListUserAdapter";
-    String currentUserId;
+    private static Map<String, String> friendAvatarUrls = new HashMap<>(); // userId -> avatarUrl
 
     public ListUserAdapter(@NonNull FirestoreRecyclerOptions<User> options) {
         super(options);
@@ -68,15 +71,21 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
                 holder.textUserName.setText(model.getUsername() + " (Me)");
             }
         });
+        String avatarUrl = friendAvatarUrls.get(model.getUserId());
+        if (avatarUrl != null) {
+            holder.imageProfile.setColorFilter(null);
 
-        // Load ảnh đại diện từ Firebase Storage
-        FirebaseUtil.getOtherProfilePicStorageRef(model.getUserId()).getDownloadUrl()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Uri uri = task.getResult();
-                        AndroidUtil.setProfilePic(holder.itemView.getContext(), uri, holder.imageProfile);
-                    }
-                });
+            Glide.with(holder.itemView.getContext())
+                    .load(avatarUrl)
+                    .circleCrop()
+                    .into(holder.imageProfile);
+
+            // Nếu có avatar => clear tint
+        } else {
+            // Nếu không có avatar => set hình mặc định + tint
+            holder.imageProfile.setImageResource(R.drawable.person_icon);
+            holder.imageProfile.setColorFilter(holder.itemView.getContext().getColor(R.color.slate));
+        }
 
         // Xử lý sự kiện click vào user
         holder.itemView.setOnClickListener(v -> {
@@ -105,6 +114,12 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
                         .map(profile -> String.valueOf(profile.id)) // Chuyển id thành String
                         .collect(Collectors.toList());
 
+                friendAvatarUrls.clear();
+                for (UserProfile profile : profiles) {
+                    if (profile.friendState == UserProfile.FriendState.FRIEND) {
+                        friendAvatarUrls.put(String.valueOf(profile.id), profile.avatarUrl);
+                    }
+                }
                 Log.d(TAG, "Friend IDs: " + friendIds);
                 Log.d(TAG, "Raw friend profiles: " + profiles);
                 Log.d(TAG, "Friend IDs extracted: " + friendIds);
@@ -132,7 +147,7 @@ public class ListUserAdapter extends FirestoreRecyclerAdapter<User, ListUserAdap
         super.onError(e);
         e.printStackTrace();
     }
-  
+
     public static class UserViewHolder extends RecyclerView.ViewHolder {
         TextView textUserName, textPhoneNumber;
         ImageView imageProfile;
